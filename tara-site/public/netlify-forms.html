@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>TARA Netlify Forms</title>
+  </head>
+  <body>
+    <form
+      name="tara-contact"
+      method="POST"
+      data-netlify="true"
+      netlify-honeypot="bot-field"
+      hidden
+    >
+      <input type="hidden" name="form-name" value="tara-contact" />
+      <input
+        type="hidden"
+        name="subject"
+        value="New lead from %{formName} (%{submissionId})"
+      />
+      <input type="text" name="bot-field" />
+      <input type="text" name="name" />
+      <input type="email" name="email" />
+      <input type="text" name="inquiry" />
+      <input type="text" name="company" />
+      <textarea name="message"></textarea>
+    </form>
+
+    <form
+      name="tara-preorder"
+      method="POST"
+      data-netlify="true"
+      netlify-honeypot="bot-field"
+      hidden
+    >
+      <input type="hidden" name="form-name" value="tara-preorder" />
+      <input
+        type="hidden"
+        name="subject"
+        value="New lead from %{formName} (%{submissionId})"
+      />
+      <input type="text" name="bot-field" />
+      <input type="hidden" name="submission_source" />
+      <input type="text" name="name" />
+      <input type="email" name="email" />
+      <input type="tel" name="phone" />
+      <input type="text" name="scent" />
+      <input type="number" name="quantity" />
+      <input type="text" name="city" />
+      <input type="text" name="contact_method" />
+      <input type="text" name="purpose" />
+      <input type="text" name="delivery_method" />
+      <input type="text" name="confirmation_consent" />
+      <textarea name="notes"></textarea>
+    </form>
+
+    <form
+      name="tara-newsletter"
+      method="POST"
+      data-netlify="true"
+      netlify-honeypot="bot-field"
+      hidden
+    >
+      <input type="hidden" name="form-name" value="tara-newsletter" />
+      <input
+        type="hidden"
+        name="subject"
+        value="New lead from %{formName} (%{submissionId})"
+      />
+      <input type="text" name="bot-field" />
+      <input type="email" name="email" />
+    </form>
+
+    <form
+      name="tara-quiz-lead"
+      method="POST"
+      data-netlify="true"
+      netlify-honeypot="bot-field"
+      hidden
+    >
+      <input type="hidden" name="form-name" value="tara-quiz-lead" />
+      <input
+        type="hidden"
+        name="subject"
+        value="New TARA quiz lead from %{formName} (%{submissionId})"
+      />
+      <input type="text" name="bot-field" />
+      <input type="hidden" name="submission_source" />
+      <input type="hidden" name="quiz_name" />
+      <input type="hidden" name="quiz_result" />
+      <input type="hidden" name="quiz_result_slug" />
+      <textarea name="scores"></textarea>
+      <input type="text" name="preferred_name" />
+      <input type="text" name="gender" />
+      <input type="email" name="email" />
+      <input type="tel" name="mobile" />
+      <input type="text" name="submitted_at" />
+    </form>
+
+    <form
+      name="tara-cart-checkout"
+      method="POST"
+      data-netlify="true"
+      netlify-honeypot="bot-field"
+      hidden
+    >
+      <input type="hidden" name="form-name" value="tara-cart-checkout" />
+      <input
+        type="hidden"
+        name="subject"
+        value="New lead from %{formName} (%{submissionId})"
+      />
+      <input type="text" name="bot-field" />
+      <input type="hidden" name="submission_source" />
+      <input type="hidden" name="cart_items" />
+      <input type="hidden" name="cart_total" />
+      <input type="hidden" name="payment_method" />
+      <input type="text" name="name" />
+      <input type="email" name="email" />
+      <input type="tel" name="phone" />
+      <input type="text" name="address_line_1" />
+      <input type="text" name="address_line_2" />
+      <input type="text" name="address_line_3" />
+      <input type="text" name="city" />
+      <input type="text" name="zipcode" />
+      <input type="text" name="country" />
+      <textarea name="notes"></textarea>
+    </form>
+
+    <form
+      name="tara-order-events"
+      method="POST"
+      data-netlify="true"
+      hidden
+    >
+      <input type="hidden" name="form-name" value="tara-order-events" />
+      <input
+        type="hidden"
+        name="subject"
+        value="New order event from %{formName} (%{submissionId})"
+      />
+      <input type="text" name="event_label" />
+      <input type="text" name="order_reference" />
+      <textarea name="item_summary"></textarea>
+      <input type="text" name="customer_name" />
+      <input type="email" name="customer_email" />
+      <input type="tel" name="customer_phone" />
+      <textarea name="delivery_address"></textarea>
+      <input type="text" name="amount" />
+      <input type="text" name="payment_status" />
+      <input type="text" name="bill_code" />
+      <input type="url" name="payment_url" />
+      <textarea name="notes"></textarea>
+      <input type="text" name="submitted_at" />
+    </form>
+
+    <form
+      name="tara-hiring-confirmation"
+      method="POST"
+      data-netlify="true"
+      netlify-honeypot="companyWebsite"
+      hidden
+    >
+      <input type="hidden" name="form-name" value="tara-hiring-confirmation" />
+      <input
+        type="hidden"
+        name="subject"
+        data-remove-prefix
+        value="New TARA hiring confirmation from %{formName} (%{submissionId})"
+      />
+      <input type="text" name="companyWebsite" />
+      <input type="hidden" name="submission_source" />
+      <input type="text" name="submissionId" />
+      <input type="url" name="pdfUrl" />
+      <input type="text" name="fullName" />
+      <input type="text" name="icNumber" />
+      <input type="tel" name="phone" />
+      <input type="email" name="email" />
+      <textarea name="homeAddress"></textarea>
+      <input type="text" name="bankName" />
+      <input type="text" name="accountNumber" />
+      <input type="text" name="signatureName" />
+      <input type="text" name="signatureDate" />
+      <input type="text" name="signatureCaptured" />
+      <input type="text" name="role" />
+      <input type="text" name="period" />
+      <input type="text" name="hours" />
+      <textarea name="venue"></textarea>
+      <input type="text" name="basicPay" />
+      <input type="text" name="commission" />
+      <input type="text" name="targetBonus" />
+      <input type="text" name="maxDailyPayout" />
+      <input type="text" name="ssmNo" />
+      <textarea name="availabilityAck"></textarea>
+      <textarea name="payAck"></textarea>
+      <textarea name="conductAck"></textarea>
+      <textarea name="attendanceAck"></textarea>
+      <textarea name="payoutAck"></textarea>
+      <textarea name="accuracyAck"></textarea>
+      <textarea name="acknowledgementSummary"></textarea>
+      <input type="text" name="sourcePage" />
+    </form>
+  </body>
+</html>

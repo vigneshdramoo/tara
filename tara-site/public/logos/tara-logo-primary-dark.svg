@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1800" fill="none">
+  <defs>
+    <linearGradient id="tara-bg" x1="168" y1="116" x2="1462" y2="1674" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1A334A"/>
+      <stop offset="1" stop-color="#4B306A"/>
+    </linearGradient>
+    <radialGradient id="tara-halo" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(800 664) rotate(90) scale(548 612)">
+      <stop offset="0" stop-color="#F7F3EB" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#F7F3EB" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="tara-axis-dark" x1="512" y1="160" x2="512" y2="900" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F7F3EB" stop-opacity="0"/>
+      <stop offset="0.48" stop-color="#F7F3EB" stop-opacity="0.34"/>
+      <stop offset="1" stop-color="#F7F3EB" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="tara-depth-dark" x1="512" y1="258" x2="512" y2="952" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F7F3EB" stop-opacity="0.05"/>
+      <stop offset="1" stop-color="#0A0A0A" stop-opacity="0.22"/>
+    </linearGradient>
+    <filter id="tara-soft-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="22" stdDeviation="28" flood-color="#0A0A0A" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+  <rect width="1600" height="1800" rx="88" fill="url(#tara-bg)"/>
+  <ellipse cx="800" cy="664" rx="548" ry="612" fill="url(#tara-halo)"/>
+  <g transform="translate(360 118) scale(0.86)" filter="url(#tara-soft-shadow)">
+    <path d="M512 258L664 636L512 952L360 636Z" fill="url(#tara-depth-dark)"/>
+    <path d="M512 124L690 410H334L512 124Z" stroke="#CA9E5B" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M334 410H690" stroke="#CA9E5B" stroke-width="20" stroke-linecap="round"/>
+    <path d="M334 410L512 900L690 410" stroke="#CA9E5B" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M242 410H364L303 515Z" stroke="#CA9E5B" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M660 410H782L721 515Z" stroke="#CA9E5B" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M512 160V880" stroke="url(#tara-axis-dark)" stroke-width="8" stroke-linecap="round"/>
+  </g>
+  <text x="800" y="1368" text-anchor="middle" fill="#F7F3EB" font-family="Didot, 'Bodoni 72', Baskerville, 'Times New Roman', serif" font-size="198" letter-spacing="0.2em">TARA</text>
+  <text x="800" y="1466" text-anchor="middle" fill="#F7F3EB" fill-opacity="0.88" font-family="'Avenir Next', Helvetica, Arial, sans-serif" font-size="40" letter-spacing="0.42em">ILLUMINATE THE UNSEEN</text>
+</svg>

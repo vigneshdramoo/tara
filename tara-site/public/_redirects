@@ -1,0 +1,11 @@
+/quiz /quiz.html 200!
+/quiz/ /quiz.html 200!
+/journal /journal.html 200!
+/journal/ /journal.html 200!
+/journal/:slug /journal/:slug.html 200!
+/journal/:slug/ /journal/:slug.html 200!
+/scents/aurora /scents/aureya 301
+/scents/marin /scents/maris 301
+/collections/zeus /scents/zephyr 301
+/collections/hera /scents/aureya 301
+/collections /scents 301

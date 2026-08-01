@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" fill="none">
+  <defs>
+    <linearGradient id="tara-axis-light" x1="512" y1="160" x2="512" y2="900" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#CA9E5B" stop-opacity="0"/>
+      <stop offset="0.48" stop-color="#CA9E5B" stop-opacity="0.24"/>
+      <stop offset="1" stop-color="#CA9E5B" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="tara-depth-light" x1="512" y1="258" x2="512" y2="952" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1A334A" stop-opacity="0.08"/>
+      <stop offset="1" stop-color="#4B306A" stop-opacity="0.12"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(92 114) scale(0.45)">
+    <path d="M512 258L664 636L512 952L360 636Z" fill="url(#tara-depth-light)"/>
+    <path d="M512 124L690 410H334L512 124Z" stroke="#CA9E5B" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M334 410H690" stroke="#CA9E5B" stroke-width="20" stroke-linecap="round"/>
+    <path d="M334 410L512 900L690 410" stroke="#CA9E5B" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M242 410H364L303 515Z" stroke="#CA9E5B" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M660 410H782L721 515Z" stroke="#CA9E5B" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M512 160V880" stroke="url(#tara-axis-light)" stroke-width="8" stroke-linecap="round"/>
+  </g>
+  <text x="566" y="410" fill="#0A0A0A" font-family="Didot, 'Bodoni 72', Baskerville, 'Times New Roman', serif" font-size="182" letter-spacing="0.14em">TARA</text>
+  <line x1="566" y1="466" x2="1462" y2="466" stroke="#CA9E5B" stroke-width="2" stroke-linecap="round" stroke-opacity="0.44"/>
+  <text x="566" y="566" fill="#1A334A" fill-opacity="0.86" font-family="'Avenir Next', Helvetica, Arial, sans-serif" font-size="38" letter-spacing="0.36em">ILLUMINATE THE UNSEEN</text>
+</svg>

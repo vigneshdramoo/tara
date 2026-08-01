@@ -1,0 +1,104 @@
+@import "tailwindcss";
+
+:root {
+  --color-regal-gold: #ca9e5b;
+  --color-onyx-black: #0a0a0a;
+  --color-midnight-blue: #1a334a;
+  --color-mystic-purple: #4b306a;
+  --color-ivory: #f7f3eb;
+  --color-amber-sunset: #c88e4d;
+  --color-midnight: var(--color-midnight-blue);
+  --color-night: var(--color-onyx-black);
+  --color-gold: var(--color-regal-gold);
+  --color-blue: var(--color-midnight-blue);
+  --color-purple: var(--color-mystic-purple);
+  --color-amber: var(--color-amber-sunset);
+  --color-copy: #241f1a;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--color-ivory);
+}
+
+body {
+  min-height: 100vh;
+  overflow-x: hidden;
+  background:
+    radial-gradient(circle at top left, rgba(202, 158, 91, 0.14), transparent 24%),
+    radial-gradient(circle at top right, rgba(202, 158, 91, 0.08), transparent 20%),
+    linear-gradient(
+      180deg,
+      #fbf8f1 0%,
+      var(--color-ivory) 42%,
+      #f1ece2 100%
+    ),
+    var(--color-ivory);
+  color: var(--color-onyx-black);
+  font-family: var(--font-sans), sans-serif;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(10, 10, 10, 0.018), rgba(10, 10, 10, 0.018)),
+    linear-gradient(90deg, transparent, rgba(10, 10, 10, 0.022), transparent);
+  opacity: 0.12;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.3), transparent 72%);
+}
+
+@keyframes ticker {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-\[ticker_28s_linear_infinite\],
+  .animate-\[ticker_44s_linear_infinite\] {
+    animation: none;
+    transform: none;
+  }
+}
+
+a {
+  transition: color 200ms ease, border-color 200ms ease, background-color 200ms ease;
+}
+
+::selection {
+  background: rgba(200, 142, 77, 0.36);
+  color: var(--color-onyx-black);
+}
+
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4 {
+    letter-spacing: 0;
+    overflow-wrap: break-word;
+  }
+}
+
+@layer utilities {
+  .font-editorial {
+    font-family: var(--font-serif), serif;
+  }
+
+  .text-balance {
+    text-wrap: normal;
+  }
+
+  @media (min-width: 640px) {
+    .text-balance {
+      text-wrap: balance;
+    }
+  }
+}

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" fill="none">
+  <defs>
+    <linearGradient id="tara-axis" x1="512" y1="160" x2="512" y2="900" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F7F3EB" stop-opacity="0"/>
+      <stop offset="0.48" stop-color="#CA9E5B" stop-opacity="0.34"/>
+      <stop offset="1" stop-color="#F7F3EB" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="tara-depth" x1="512" y1="258" x2="512" y2="952" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1A334A" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#4B306A" stop-opacity="0.3"/>
+    </linearGradient>
+  </defs>
+  <g filter="url(#none)">
+    <path d="M512 258L664 636L512 952L360 636Z" fill="url(#tara-depth)"/>
+    <path d="M512 124L690 410H334L512 124Z" stroke="#CA9E5B" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M334 410H690" stroke="#CA9E5B" stroke-width="20" stroke-linecap="round"/>
+    <path d="M334 410L512 900L690 410" stroke="#CA9E5B" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M242 410H364L303 515Z" stroke="#CA9E5B" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M660 410H782L721 515Z" stroke="#CA9E5B" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M512 160V880" stroke="url(#tara-axis)" stroke-width="8" stroke-linecap="round"/>
+  </g>
+</svg>
