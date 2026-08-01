@@ -1,0 +1,103 @@
+<html>
+  <body
+    style="
+      margin: 0;
+      background: #0a0a0a;
+      color: #f7f3eb;
+      font-family: Georgia, 'Times New Roman', serif;
+      padding: 32px;
+    "
+  >
+    <div
+      style="
+        border: 1px solid rgba(202, 158, 91, 0.38);
+        padding: 28px;
+        max-width: 680px;
+      "
+    >
+      <p
+        style="
+          color: #ca9e5b;
+          font-family: Arial, sans-serif;
+          font-size: 11px;
+          letter-spacing: 0.24em;
+          text-transform: uppercase;
+        "
+      >
+        {{eventLabel}}
+      </p>
+      <h1 style="font-size: 34px; line-height: 1; margin: 18px 0 0;">
+        {{orderReference}}
+      </h1>
+      <p
+        style="
+          color: rgba(247, 243, 235, 0.72);
+          font-family: Arial, sans-serif;
+          font-size: 15px;
+          line-height: 1.7;
+          margin: 22px 0 0;
+          white-space: pre-line;
+        "
+      >{{itemSummary}}</p>
+      <table
+        style="
+          border-collapse: collapse;
+          color: rgba(247, 243, 235, 0.78);
+          font-family: Arial, sans-serif;
+          font-size: 14px;
+          line-height: 1.6;
+          margin-top: 24px;
+          width: 100%;
+        "
+      >
+        <tr>
+          <td style="border-top: 1px solid rgba(247, 243, 235, 0.12); padding: 10px 0; width: 34%;">Customer</td>
+          <td style="border-top: 1px solid rgba(247, 243, 235, 0.12); padding: 10px 0;">{{customerName}}</td>
+        </tr>
+        <tr>
+          <td style="border-top: 1px solid rgba(247, 243, 235, 0.12); padding: 10px 0;">Email</td>
+          <td style="border-top: 1px solid rgba(247, 243, 235, 0.12); padding: 10px 0;">{{customerEmail}}</td>
+        </tr>
+        <tr>
+          <td style="border-top: 1px solid rgba(247, 243, 235, 0.12); padding: 10px 0;">Phone</td>
+          <td style="border-top: 1px solid rgba(247, 243, 235, 0.12); padding: 10px 0;">{{customerPhone}}</td>
+        </tr>
+        <tr>
+          <td style="border-top: 1px solid rgba(247, 243, 235, 0.12); padding: 10px 0;">Delivery</td>
+          <td style="border-top: 1px solid rgba(247, 243, 235, 0.12); padding: 10px 0; white-space: pre-line;">{{deliveryAddress}}</td>
+        </tr>
+        <tr>
+          <td style="border-top: 1px solid rgba(247, 243, 235, 0.12); padding: 10px 0;">Amount</td>
+          <td style="border-top: 1px solid rgba(247, 243, 235, 0.12); padding: 10px 0;">{{amount}}</td>
+        </tr>
+        <tr>
+          <td style="border-top: 1px solid rgba(247, 243, 235, 0.12); padding: 10px 0;">Payment</td>
+          <td style="border-top: 1px solid rgba(247, 243, 235, 0.12); padding: 10px 0;">{{paymentStatus}}</td>
+        </tr>
+        <tr>
+          <td style="border-top: 1px solid rgba(247, 243, 235, 0.12); padding: 10px 0;">Bill Code</td>
+          <td style="border-top: 1px solid rgba(247, 243, 235, 0.12); padding: 10px 0;">{{billCode}}</td>
+        </tr>
+        <tr>
+          <td style="border-top: 1px solid rgba(247, 243, 235, 0.12); padding: 10px 0;">Payment URL</td>
+          <td style="border-top: 1px solid rgba(247, 243, 235, 0.12); padding: 10px 0;">{{paymentUrl}}</td>
+        </tr>
+        <tr>
+          <td style="border-top: 1px solid rgba(247, 243, 235, 0.12); padding: 10px 0;">Notes</td>
+          <td style="border-top: 1px solid rgba(247, 243, 235, 0.12); padding: 10px 0; white-space: pre-line;">{{notes}}</td>
+        </tr>
+      </table>
+      <p
+        style="
+          color: rgba(247, 243, 235, 0.48);
+          font-family: Arial, sans-serif;
+          font-size: 12px;
+          line-height: 1.7;
+          margin: 22px 0 0;
+        "
+      >
+        Submitted at {{submittedAt}}.
+      </p>
+    </div>
+  </body>
+</html>

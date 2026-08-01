@@ -1,0 +1,10 @@
+[build]
+command = "npm run build"
+publish = "out"
+
+[functions]
+directory = "netlify/functions"
+included_files = ["netlify/functions/lib/assets/**"]
+
+[build.environment]
+NODE_VERSION = "22"
