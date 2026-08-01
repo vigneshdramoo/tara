@@ -35,6 +35,9 @@ export function AboutTeaser({ content }: AboutTeaserProps) {
               <p className="mt-7 text-base leading-8 text-[var(--color-copy)] sm:text-lg">
                 {content.lead}
               </p>
+              <blockquote className="mt-6 border-l-2 border-[var(--color-gold)]/40 pl-4 font-editorial text-2xl italic leading-snug text-[var(--color-onyx-black)] sm:text-3xl">
+                &ldquo;{content.quote}&rdquo;
+              </blockquote>
               <p className="mt-6 text-sm leading-7 text-black/58">
                 {content.paragraphs[0]}
               </p>

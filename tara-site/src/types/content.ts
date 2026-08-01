@@ -78,13 +78,6 @@ export type PaymentMethod = {
   kind: "visa" | "mastercard" | "paypal" | "tng" | "ssl";
 };
 
-export type SocialMoment = {
-  title: string;
-  caption: string;
-  meta: string;
-  visual: VisualAsset;
-};
-
 export type QuizOption = {
   value: string;
   label: string;
@@ -122,16 +115,10 @@ export type BrandContent = {
   home: {
     hero: HeroContent;
     story: StoryContent;
-    featuredScents: SectionIntro;
     trust: SectionIntro & {
       guarantee: string;
       signals: TrustSignal[];
       payments: PaymentMethod[];
-    };
-    social: SectionIntro & {
-      note: string;
-      items: SocialMoment[];
-      cta: Cta;
     };
     eightMlPromo: CalloutContent;
     preorder: CalloutContent;

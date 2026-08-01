@@ -52,29 +52,29 @@ export const brand: BrandContent = {
   },
   home: {
     hero: {
-      eyebrow: "New Launch / THEON",
-      title: "THEON has arrived.",
+      eyebrow: "Seven Scents, One House",
+      title: "Fragrance that stays after you leave.",
       body:
-        "A warm, creamy tea fragrance where golden oolong and osmanthus steep into coconut cream, soft vanilla, sandalwood, and skin-close musk.",
-      note: "Steeped in divine calm. Try THEON through the RM99 discovery set, or reserve a 50mL bottle while RM169 launch pricing is active.",
+        "TARA is a Malaysian fragrance house built on sensual restraint: seven edited scents, Aureya through THEON, each composed to feel close before it feels loud.",
+      note: "New this season: THEON, a warm tea gourmand. Try any three 8mL scents for RM99, or reserve a 50mL bottle while RM169 launch pricing is active.",
       ctas: [
         {
-          label: "Explore THEON",
-          href: "/scents/theon",
+          label: "Shop The Collection",
+          href: "/scents",
           variant: "primary",
         },
         {
-          label: "Explore All Scents",
-          href: "/scents",
+          label: "Take The Scent Quiz",
+          href: "/quiz",
           variant: "secondary",
         },
       ],
       metrics: [
         {
-          label: "New Launch",
-          value: "THEON",
-          description: "Warm tea gourmand for the ritual you return to.",
-          badges: ["Oolong", "Osmanthus"],
+          label: "Scent Family",
+          value: "7",
+          description: "Aureya, Zephyr, Maris, Eliora, Ashoka, Ardor, and THEON.",
+          badges: ["New: THEON"],
         },
         {
           label: "Full Bottle",
@@ -114,13 +114,6 @@ export const brand: BrandContent = {
         alt: "TARA perfume bottles in warm window light with soft fabric, styled for Fragrance written like a private confession.",
       },
     },
-    featuredScents: {
-      eyebrow: "Featured Scents",
-      title: "Start with the scent your body language already knows.",
-      body:
-        "Aureya glows with soft power. Zephyr moves with tailored radiance. Maris turns salt air into a quiet signal. Eliora brings floral warmth after dark. Ashoka stays tender and close. Ardor heats the room with controlled spice. THEON returns everything to warm tea calm.",
-      note: "All 50mL Eau de Parfum bottles are RM239 regular, with the first 100 at RM169.",
-    },
     trust: {
       eyebrow: "Order Assurance",
       title: "Luxury should feel as secure as it looks.",
@@ -157,80 +150,6 @@ export const brand: BrandContent = {
         { label: "PayPal", kind: "paypal" },
         { label: "Touch 'n Go", kind: "tng" },
       ],
-    },
-    social: {
-      eyebrow: "TARA in the Wild",
-      title: "A private atmosphere, seen in fragments.",
-      body:
-        "These launch moments show the lineup in its natural habitat: gold-lit vanities, dark tailoring, mineral air, soft florals, warm spice, tea warmth, and the half-second before someone leans closer.",
-      note: "",
-      items: [
-        {
-          title: "THEON Calm",
-          caption:
-            "THEON is a warm tea ritual: golden oolong, osmanthus, coconut cream, soft vanilla, sandalwood, and skin-close musk.",
-          meta: "Warm Tea / Divine Calm",
-          visual: {
-            src: "/editorial/tara-theon-50ml.png",
-            alt: "THEON perfume bottle in warm golden light for the TARA new launch.",
-          },
-        },
-        {
-          title: "Aureya Dawn",
-          caption:
-            "Aureya feels like first light through linen: pear brightness, jasmine silk, and amber warmth becoming quiet confidence.",
-          meta: "Soft Confidence / Golden Memory",
-          visual: {
-            src: "/editorial/tara-aureya-social-optimized.webp",
-            alt: "Aureya Radiant Identity campaign artwork with a warm golden bottle, soft florals, and ivory light.",
-          },
-        },
-        {
-          title: "Zephyr Radiance",
-          caption:
-            "Zephyr starts like dawn against glass, then warms into polished woods and skin: clean confidence with a compliment trail.",
-          meta: "Urban Radiance / Magnetic Air",
-          visual: {
-            src: "/editorial/tara-zephyr-social-optimized.webp",
-            alt: "Zephyr Controlled Presence campaign artwork with a blue fragrance bottle, city lights, dark tailoring, and gold accents.",
-          },
-        },
-        {
-          title: "Ashoka Softness",
-          caption:
-            "Ashoka is a softness that stays: creamy almond, vanilla orchid, pale petals, amber, and skin musk made for tender close-range memory.",
-          meta: "Softness / Almond Orchid",
-          visual: {
-            src: "/editorial/tara-ashoka-social-optimized.webp",
-            alt: "Ashoka perfume bottle held in a dark editorial portrait for the TARA new launch.",
-          },
-        },
-        {
-          title: "Ardor Heat",
-          caption:
-            "Ardor ignites presence with black tea, cardamom, cinnamon, amber resin, tonka, sandalwood, and dark musk.",
-          meta: "Spice / Controlled Heat",
-          visual: {
-            src: "/editorial/tara-ardor-social-optimized.webp",
-            alt: "Ardor perfume bottle held by a man in dark tailoring for the TARA new launch.",
-          },
-        },
-        {
-          title: "Maris Midnight",
-          caption:
-            "Maris is the coast after dark: salt air, a narrow beam of amber, wet stone, and skin that remembers the weather.",
-          meta: "Salt Signal / Mineral Skin",
-          visual: {
-            src: "/editorial/tara-maris-social-optimized.webp",
-            alt: "Maris Intimate Pull campaign artwork with a green fragrance bottle, clean botanicals, soft shadows, and quiet luxury styling.",
-          },
-        },
-      ],
-      cta: {
-        label: "Follow on Instagram",
-        href: instagramUrl,
-        variant: "secondary",
-      },
     },
     eightMlPromo: {
       title: "Try three first. Commit after skin decides.",

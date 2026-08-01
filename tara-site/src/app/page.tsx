@@ -2,21 +2,12 @@ import type { Metadata } from "next";
 
 import { AboutTeaser } from "@/components/sections/AboutTeaser";
 import { ConversionCta } from "@/components/sections/ConversionCta";
-import { EightMlPromoOffer } from "@/components/sections/EightMlPromoOffer";
-import { FeaturedScents } from "@/components/sections/FeaturedScents";
 import { Hero } from "@/components/sections/Hero";
 import { JournalPreview } from "@/components/sections/JournalPreview";
 import { LaunchFaq } from "@/components/sections/LaunchFaq";
-import { LaunchUpdates } from "@/components/sections/LaunchUpdates";
-import { LaunchUrgency } from "@/components/sections/LaunchUrgency";
-import { PaymentLocalizationBar } from "@/components/sections/PaymentLocalizationBar";
-import { PhilosophyMoment } from "@/components/sections/PhilosophyMoment";
 import { ScentDiscoveryExperience } from "@/components/sections/ScentDiscoveryExperience";
-import { ScentFilmTeaser } from "@/components/sections/ScentFilmTeaser";
 import { ShoppableScentFamily } from "@/components/sections/ShoppableScentFamily";
-import { SocialFeed } from "@/components/sections/SocialFeed";
 import { StickyMobileCta } from "@/components/sections/StickyMobileCta";
-import { TheonLaunchFeature } from "@/components/sections/TheonLaunchFeature";
 import { WhyTara } from "@/components/sections/WhyTara";
 import { brand } from "@/content/brand";
 import { scentDiscoveryExperience } from "@/content/homepage";
@@ -60,27 +51,33 @@ export default function HomePage() {
 
   return (
     <>
-      {/* Hero section: one clear promise plus the two highest-value actions. */}
+      {/* 1. Hero: the house's single clear promise, plus the two highest-value actions. */}
       <Hero content={brand.home.hero} />
-      <TheonLaunchFeature />
-      <LaunchUrgency />
-      <PaymentLocalizationBar />
-      <LaunchUpdates />
-      <EightMlPromoOffer content={brand.home.eightMlPromo} />
-      <WhyTara />
-      <ScentDiscoveryExperience />
+
+      {/* 2. Scent Family: the one canonical product listing (grid + comparison table). */}
       <ShoppableScentFamily scents={availableScents} />
-      <ScentFilmTeaser />
-      <PhilosophyMoment quote={brand.home.story.quote} />
-      <FeaturedScents intro={brand.home.featuredScents} scents={availableScents} />
-      <SocialFeed content={brand.home.social} />
-      <JournalPreview />
+
+      {/* 3. Why TARA: trust credentials and launch stats, kept to a single tight pass. */}
+      <WhyTara />
+
+      {/* 4. Find Your Scent: the interactive quiz teaser, the page's one signature moment. */}
+      <ScentDiscoveryExperience />
+
+      {/* 5. About + Philosophy: brand story and the house quote, merged into one beat. */}
       <AboutTeaser content={brand.home.story} />
+
+      {/* 6. Journal: practical content, keeps scroll depth earning its keep. */}
+      <JournalPreview />
+
+      {/* 7. FAQ: pre-purchase objections handled before the final ask. */}
       <LaunchFaq />
+
+      {/* 8. Final CTA: the one closing conversion moment. */}
       <ConversionCta
         content={brand.home.preorder}
         trustLine={brand.home.trust.guarantee}
       />
+
       <StickyMobileCta
         primary={{ ...scentDiscoveryExperience.secondary, variant: "primary" }}
         secondary={{ ...brand.home.eightMlPromo.primary, variant: "secondary" }}

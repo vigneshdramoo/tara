@@ -49,74 +49,6 @@ export const homepageTrust = {
         "The 3 x 8mL discovery set helps you test on skin before choosing the bottle that stays with you.",
     },
   ],
-  testimonials: [
-    {
-      name: "Aina",
-      location: "Kuala Lumpur",
-      scent: "Aureya",
-      quote:
-        "Aureya feels soft but expensive. It stayed close on my skin through office air-cond and still smelled warm when I got home.",
-      visual: {
-        src: "/editorial/tara-aureya-social-optimized.webp",
-        alt: "Aureya perfume bottle styled with blush florals for an early customer review.",
-      },
-    },
-    {
-      name: "Daniel",
-      location: "Petaling Jaya",
-      scent: "Zephyr",
-      quote:
-        "Zephyr is clean without smelling basic. The citrus opens bright, then the woody musk makes it feel more confident.",
-      visual: {
-        src: "/editorial/tara-zephyr-social-optimized.webp",
-        alt: "Zephyr perfume bottle styled with city notes for an early customer review.",
-      },
-    },
-    {
-      name: "Mira",
-      location: "Shah Alam",
-      scent: "Eliora",
-      quote:
-        "I tried Eliora at the reveal and kept thinking about it after. It feels golden, feminine, and not too sweet.",
-      visual: {
-        src: "/editorial/tara-eliora-square-optimized.webp",
-        alt: "ELIORA perfume bottle in golden floral styling for an early customer review.",
-      },
-    },
-    {
-      name: "Nadia",
-      location: "Subang Jaya",
-      scent: "Ashoka",
-      quote:
-        "Ashoka feels soft and expensive without being too sweet. The almond warmth stays close, which makes it easy to wear every day.",
-      visual: {
-        src: "/editorial/tara-ashoka-editorial-optimized.webp",
-        alt: "Ashoka perfume bottle styled with soft florals and almond warmth for an early customer review.",
-      },
-    },
-    {
-      name: "Ryan",
-      location: "Kuala Lumpur",
-      scent: "Ardor",
-      quote:
-        "Ardor has that warm spicy confidence I wanted. It feels polished at first, then the tonka and woods make it more addictive.",
-      visual: {
-        src: "/editorial/tara-ardor-square-optimized.webp",
-        alt: "Ardor perfume bottle styled with black tea, spice, and woods for an early customer review.",
-      },
-    },
-  ],
-  ugcPrompt: {
-    title: "Share your bottle ritual.",
-    body:
-      "Post your TARA bottle, skin-test notes, or discovery set ranking and tag @tara_scents.my with #TARAScents.",
-    hashtag: "#TARAScents",
-    cta: {
-      label: "Tag TARA On Instagram",
-      href: brand.instagramUrl,
-      variant: "secondary" as const,
-    },
-  },
 };
 
 export const scentDiscoveryExperience = {
@@ -138,40 +70,4 @@ export const scentDiscoveryExperience = {
   },
   videoPrompt:
     "Not sure? Text us your skin type, usual perfumes, and the kind of impression you want. If you have a spray or dry-down video, send it too and TARA will recommend the closest match.",
-};
-
-export const launchUrgency = {
-  eyebrow: "Launch Allocation",
-  title: "First 100 bottles at RM169.",
-  body:
-    "Full-bottle launch pricing is limited before 50mL bottles return to RM239. If you already know your scent, reserve the RM169 allocation now.",
-  remaining: 47,
-  total: 100,
-  ticker: [
-    "RM169 launch pricing active",
-    "3 x 8mL discovery set available at RM99",
-    "WhatsApp scent advice open for Malaysia orders",
-    "THEON has joined the TARA scent family",
-  ],
-  cta: {
-    label: "Reserve Launch Price",
-    href: "/preorder#secure-checkout",
-    variant: "primary" as const,
-  },
-};
-
-export const paymentLocalization = {
-  eyebrow: "Malaysia-Friendly Checkout",
-  title: "Pay locally. Confirm personally.",
-  body:
-    "Secure checkout is handled through ToyyibPay, with Malaysian-friendly payment methods shown on the hosted payment page. WhatsApp concierge remains available for order guidance before payment.",
-  badges: ["ToyyibPay", "FPX", "Credit Card", "DuitNow QR when enabled", "TNG manual support"],
-};
-
-export const scentGuarantee = {
-  title: "Start with RM99. Upgrade with confidence.",
-  body:
-    "Order the 3 x 8mL discovery set before choosing a full bottle. If you move from discovery to a 50mL preorder during the launch window, message TARA and the house can apply the sample-set value as a concierge credit where eligible.",
-  note:
-    "Credit is manually confirmed by TARA and applies once per customer during launch allocation.",
 };
