@@ -36,7 +36,7 @@ const launchFaqs = [
 
 export function LaunchFaq() {
   return (
-    <section className="border-b border-black/10 py-16 sm:py-24">
+    <section className="border-b border-black/10 py-12 sm:py-16">
       <Container>
         <div className="grid gap-8 lg:grid-cols-[0.42fr_1fr]">
           <div>

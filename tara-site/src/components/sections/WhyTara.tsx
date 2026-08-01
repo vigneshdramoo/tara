@@ -4,7 +4,7 @@ import { homepageTrust } from "@/content/homepage";
 
 export function WhyTara() {
   return (
-    <section className="border-b border-black/10 py-16 sm:py-24">
+    <section className="border-b border-black/10 py-10 sm:py-14">
       <Container>
         <div className="grid gap-8 lg:grid-cols-[0.42fr_1fr] lg:items-end">
           <div>

@@ -7,7 +7,7 @@ import { journalArticles } from "@/content/journal";
 
 export function JournalPreview() {
   return (
-    <section className="border-b border-black/10 py-16 sm:py-24">
+    <section className="border-b border-black/10 py-12 sm:py-16">
       <Container>
         <div className="grid gap-8 lg:grid-cols-[0.38fr_1fr] lg:items-end">
           <p className="text-xs uppercase tracking-[0.38em] text-[var(--color-gold)]">

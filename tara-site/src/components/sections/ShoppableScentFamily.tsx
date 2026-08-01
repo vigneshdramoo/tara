@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 
 import { QuickAddButton } from "@/components/cart/QuickAddButton";
 import { Button } from "@/components/ui/Button";
@@ -10,6 +13,8 @@ import type { Scent } from "@/types/content";
 type ShoppableScentFamilyProps = {
   scents: Scent[];
 };
+
+const INITIAL_VISIBLE = 4;
 
 const comparisonRows: Array<{
   label: string;
@@ -43,6 +48,10 @@ const comparisonRows: Array<{
 ];
 
 export function ShoppableScentFamily({ scents }: ShoppableScentFamilyProps) {
+  const [expanded, setExpanded] = useState(scents.length <= INITIAL_VISIBLE);
+  const visibleScents = expanded ? scents : scents.slice(0, INITIAL_VISIBLE);
+  const hiddenCount = scents.length - visibleScents.length;
+
   return (
     <section className="border-b border-black/10 py-16 sm:py-24">
       <Container>
@@ -63,7 +72,7 @@ export function ShoppableScentFamily({ scents }: ShoppableScentFamilyProps) {
         </div>
 
         <div className="mt-12 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-          {scents.map((scent) => {
+          {visibleScents.map((scent) => {
             const visual = scent.homeVisual ?? scent.visual;
 
             return (
@@ -135,62 +144,85 @@ export function ShoppableScentFamily({ scents }: ShoppableScentFamilyProps) {
           })}
         </div>
 
-        <div className="mt-10 grid gap-3 lg:hidden">
-          {scents.map((scent) => (
-            <details
-              key={scent.slug}
-              className="group rounded-[1.15rem] border border-black/10 bg-[rgba(255,250,241,0.62)] p-4 open:bg-[rgba(202,158,91,0.06)]"
+        {hiddenCount > 0 ? (
+          <div className="mt-8 flex justify-center">
+            <Button
+              variant="secondary"
+              trackingLocation="homepage_shoppable_family"
+              trackingLabel="view_all_scents"
+              onClick={() => setExpanded(true)}
             >
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4">
-                <span>
-                  <span className="block font-editorial text-3xl leading-none">
-                    {scent.name}
+              View All {scents.length} Scents
+            </Button>
+          </div>
+        ) : null}
+
+        <details className="group mt-10 rounded-[1.15rem] border border-black/10 bg-[rgba(255,250,241,0.62)] lg:hidden">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-4">
+            <span className="text-xs uppercase tracking-[0.22em] text-[var(--color-gold)]">
+              Compare top, heart, base &amp; mood
+            </span>
+            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-black/12 text-lg leading-none text-[var(--color-gold)] transition group-open:rotate-45">
+              +
+            </span>
+          </summary>
+          <div className="grid gap-3 px-4 pb-4">
+            {scents.map((scent) => (
+              <details
+                key={scent.slug}
+                className="group/item rounded-[1rem] border border-black/10 bg-[rgba(255,250,241,0.62)] p-4 open:bg-[rgba(202,158,91,0.06)]"
+              >
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4">
+                  <span>
+                    <span className="block font-editorial text-3xl leading-none">
+                      {scent.name}
+                    </span>
+                    <span className="mt-2 block text-[10px] uppercase tracking-[0.22em] text-[var(--color-gold)]">
+                      {scent.isNew ? "New / " : ""}
+                      {scent.audience} / {scent.launchPrice}
+                    </span>
                   </span>
-                  <span className="mt-2 block text-[10px] uppercase tracking-[0.22em] text-[var(--color-gold)]">
-                    {scent.isNew ? "New / " : ""}
-                    {scent.audience} / {scent.launchPrice}
+                  <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-black/12 text-lg leading-none text-[var(--color-gold)] transition group-open/item:rotate-45">
+                    +
                   </span>
-                </span>
-                <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-black/12 text-lg leading-none text-[var(--color-gold)] transition group-open:rotate-45">
-                  +
-                </span>
-              </summary>
-              <dl className="mt-5 grid gap-3">
-                {comparisonRows.map((row) => (
-                  <div
-                    key={row.label}
-                    className="grid gap-1 border-t border-black/10 pt-3"
+                </summary>
+                <dl className="mt-5 grid gap-3">
+                  {comparisonRows.map((row) => (
+                    <div
+                      key={row.label}
+                      className="grid gap-1 border-t border-black/10 pt-3"
+                    >
+                      <dt className="text-[10px] uppercase tracking-[0.24em] text-black/42">
+                        {row.label}
+                      </dt>
+                      <dd className="text-sm leading-7 text-black/64">
+                        {row.getValue(scent)}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+                <div className="mt-5 grid gap-2">
+                  <QuickAddButton
+                    slug={scent.slug}
+                    ariaLabel={`Add ${scent.name} from mobile scent comparison to cart`}
+                    trackingLocation="homepage_mobile_scent_comparison"
+                    className="w-full border-[var(--color-gold)] bg-[var(--color-gold)] text-[var(--color-onyx-black)]"
+                  />
+                  <Button
+                    href={`/scents/${scent.slug}`}
+                    variant="secondary"
+                    size="sm"
+                    className="w-full"
+                    trackingLocation="homepage_mobile_scent_comparison"
+                    trackingParams={{ selected_scent: scent.slug }}
                   >
-                    <dt className="text-[10px] uppercase tracking-[0.24em] text-black/42">
-                      {row.label}
-                    </dt>
-                    <dd className="text-sm leading-7 text-black/64">
-                      {row.getValue(scent)}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-              <div className="mt-5 grid gap-2">
-                <QuickAddButton
-                  slug={scent.slug}
-                  ariaLabel={`Add ${scent.name} from mobile scent comparison to cart`}
-                  trackingLocation="homepage_mobile_scent_comparison"
-                  className="w-full border-[var(--color-gold)] bg-[var(--color-gold)] text-[var(--color-onyx-black)]"
-                />
-                <Button
-                  href={`/scents/${scent.slug}`}
-                  variant="secondary"
-                  size="sm"
-                  className="w-full"
-                  trackingLocation="homepage_mobile_scent_comparison"
-                  trackingParams={{ selected_scent: scent.slug }}
-                >
-                  Explore Notes
-                </Button>
-              </div>
-            </details>
-          ))}
-        </div>
+                    Explore Notes
+                  </Button>
+                </div>
+              </details>
+            ))}
+          </div>
+        </details>
 
         <div className="mt-12 hidden overflow-x-auto border-y border-black/10 lg:block">
           <table className="min-w-[1180px] w-full border-collapse text-left">

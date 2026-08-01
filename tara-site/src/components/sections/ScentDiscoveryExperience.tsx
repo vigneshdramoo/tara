@@ -8,7 +8,7 @@ export function ScentDiscoveryExperience() {
   const availableScents = getAvailableScents();
 
   return (
-    <section className="border-b border-black/10 bg-[rgba(255,250,241,0.38)] py-16 sm:py-24">
+    <section className="border-b border-black/10 bg-[rgba(255,250,241,0.38)] py-14 sm:py-20">
       <Container>
         <div className="grid gap-10 lg:grid-cols-[0.86fr_1.14fr] lg:items-center">
           <div>

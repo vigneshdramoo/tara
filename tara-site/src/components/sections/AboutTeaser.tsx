@@ -10,7 +10,7 @@ type AboutTeaserProps = {
 
 export function AboutTeaser({ content }: AboutTeaserProps) {
   return (
-    <section className="border-b border-black/10 py-16 sm:py-24">
+    <section className="border-b border-black/10 py-14 sm:py-20">
       <Container>
         <div className="grid gap-8 lg:grid-cols-[0.42fr_0.58fr] lg:items-stretch">
           <div className="relative min-h-[360px] overflow-hidden rounded-[1.35rem] border border-black/10 sm:min-h-[520px] sm:rounded-[1.8rem]">

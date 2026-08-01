@@ -28,7 +28,7 @@ export function Hero({ content }: HeroProps) {
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(247,243,235,0.94)_0%,rgba(247,243,235,0.56)_44%,rgba(247,243,235,0.28)_76%,rgba(247,243,235,0.72)_100%)]" />
       </div>
       <Container className="py-8 sm:py-9 lg:py-10">
-        <div className="grid gap-8 lg:min-h-[calc(100svh-13rem)] lg:content-between lg:gap-8">
+        <div className="grid gap-8 lg:min-h-[42rem] lg:content-between lg:gap-8">
           <div className="relative z-10 max-w-5xl">
             <p className="text-[11px] uppercase tracking-[0.3em] text-[var(--color-gold)] sm:text-xs sm:tracking-[0.42em]">
               {content.eyebrow}
