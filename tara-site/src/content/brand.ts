@@ -1,28 +1,28 @@
 import type { BrandContent } from "@/types/content";
+import { commercialOffers } from "@/content/commercial";
 
 const whatsappNumber = "+01143042883";
 const whatsappUrl =
   process.env.NEXT_PUBLIC_WHATSAPP_URL ??
   "https://wa.me/601143042883?text=Hi%20TARA%2C%20I%27d%20love%20help%20with%20a%20fragrance%20order.";
-const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "hello@tarascents.com";
+const contactEmail =
+  process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "hello@tarascents.com";
 const instagramHandle = "@tara_scents.my";
 const instagramUrl =
-  process.env.NEXT_PUBLIC_INSTAGRAM_URL ?? "https://instagram.com/tara_scents.my";
+  process.env.NEXT_PUBLIC_INSTAGRAM_URL ??
+  "https://instagram.com/tara_scents.my";
 
 export const brand: BrandContent = {
   name: "TARA",
   tagline: "Illuminate the unseen",
   description:
-    "TARA is a luxury fragrance house shaped by sensual restraint, editorial visuals, and seven high-end scents: Aureya, Zephyr, Maris, Eliora, Ashoka, Ardor, and THEON.",
+    "TARA is a luxury fragrance house shaped by sensual restraint, editorial visuals, and eight high-end scents: Aureya, Zephyr, Maris, Eliora, Ashoka, Ardor, THEON, and KAMEIRA.",
   contactEmail,
   navigation: [
-    { label: "Home", href: "/" },
-    { label: "Scent Trail", href: "/popup" },
+    { label: "Scents", href: "/scents" },
+    { label: "Scent Quiz", href: "/quiz" },
     { label: "About", href: "/about" },
     { label: "Journal", href: "/journal" },
-    { label: "Scents", href: "/scents" },
-    { label: "Preorder", href: "/preorder" },
-    { label: "Contact", href: "/contact" },
   ],
   footerLinks: [
     { label: "Scent Trail", href: "/popup" },
@@ -52,58 +52,59 @@ export const brand: BrandContent = {
   },
   home: {
     hero: {
-      eyebrow: "Seven Scents, One House",
-      title: "Fragrance that stays after you leave.",
-      body:
-        "TARA is a Malaysian fragrance house built on sensual restraint: seven edited scents, Aureya through THEON, each composed to feel close before it feels loud.",
-      note: "New this season: THEON, a warm tea gourmand. Try any three 8mL scents for RM99, or reserve a 50mL bottle while RM169 launch pricing is active.",
+      eyebrow: "TARA / Latest launches",
+      title: "THEON + KAMEIRA",
+      body: "Two new expressions from TARA’s latest launch. Intimate, wearable luxury from a Malaysian fragrance house.",
+      note: `${commercialOffers.fullBottle.launchPrice} launch pricing for the 50mL bottle before ${commercialOffers.fullBottle.regularPrice} regular. Not ready for a bottle? Try any three 8mL scents for ${commercialOffers.discoverySet.price}.`,
       ctas: [
         {
-          label: "Shop The Collection",
-          href: "/scents",
+          label: "Explore latest launches",
+          href: "#latest-launches",
           variant: "primary",
         },
         {
-          label: "Take The Scent Quiz",
-          href: "/quiz",
+          label: `Try Any 3 For ${commercialOffers.discoverySet.price}`,
+          href: "/preorder?checkout=three-8ml-promo#secure-checkout",
           variant: "secondary",
         },
       ],
       metrics: [
         {
-          label: "Scent Family",
-          value: "7",
-          description: "Aureya, Zephyr, Maris, Eliora, Ashoka, Ardor, and THEON.",
-          badges: ["New: THEON"],
+          label: "What is TARA?",
+          value: "MY",
+          description:
+            "A registered Malaysian fragrance house for edited everyday luxury.",
+          badges: ["SSM 202603110736"],
         },
         {
-          label: "Full Bottle",
-          value: "RM169",
-          description: "First 100 bottles before RM239 regular pricing returns.",
-          badges: ["FPX", "DuitNow", "Card"],
+          label: "What is THEON?",
+          value: "Tea",
+          description:
+            "Warm oolong, osmanthus, coconut cream, vanilla, woods, and musk.",
+          badges: ["New Launch"],
         },
         {
-          label: "Discovery Set",
-          value: "RM99",
-          description: "Any three 8mL scents before you commit to 50mL.",
+          label: "Start Here",
+          value: commercialOffers.discoverySet.price,
+          description: `Try ${commercialOffers.discoverySet.size.toLowerCase()} before committing to 50mL.`,
           badges: ["FPX", "DuitNow", "Card"],
         },
       ],
       visual: {
-        src: "/editorial/tara-theon-launch-hero.png",
+        src: "/editorial/tara-theon-launch-hero-optimized.webp",
         alt: "THEON Eau de Parfum bottle in warm golden light with ivory drapery.",
         priority: true,
       },
     },
     story: {
       title: "Fragrance written like a private confession.",
-      lead:
-        "TARA was built for women and men who do not need noise to feel magnetic. The house moves through black glass, warm skin, polished tailoring, and the lingering emotion a scent leaves behind.",
+      lead: "TARA was built for women and men who do not need noise to feel magnetic. The house moves through black glass, warm skin, polished tailoring, and the lingering emotion a scent leaves behind.",
       paragraphs: [
-        "The first chapter now opens into seven scents. Aureya turns golden softness into quiet confidence. Zephyr turns clean masculine air into magnetic radiance. Maris introduces mineral freshness for skin, linen, and late light. Eliora brings golden floral warmth after dark. Ashoka adds tender almond-orchid softness. Ardor brings black tea, spice, and controlled heat. THEON steepens the house with warm oolong calm.",
+        "The first chapter now opens into eight scents. Aureya turns golden softness into quiet confidence. Zephyr turns clean masculine air into magnetic radiance. Maris introduces mineral freshness for skin, linen, and late light. Eliora brings golden floral warmth after dark. Ashoka adds tender almond-orchid softness. Ardor brings black tea, spice, and controlled heat. THEON steepens the house with warm oolong calm. KAMEIRA moves from blackcurrant wine into velvet rose, closing on burnished amber.",
         "Every formula is composed to feel close before it feels loud. You notice the texture first, then the temperature, then the memory it leaves on fabric and skin.",
       ],
-      quote: "The point is not to fill the room. The point is to stay with someone after you leave it.",
+      quote:
+        "The point is not to fill the room. The point is to stay with someone after you leave it.",
       highlights: [
         "Scent family: Aureya, Zephyr, Maris, Eliora, Ashoka, Ardor, THEON",
         "First 100 bottles at RM169",
@@ -117,8 +118,7 @@ export const brand: BrandContent = {
     trust: {
       eyebrow: "Order Assurance",
       title: "Luxury should feel as secure as it looks.",
-      body:
-        "Every order moves through encrypted checkout, personal confirmation, and direct house support from first inquiry to final delivery.",
+      body: "Every order moves through encrypted checkout, personal confirmation, and direct house support from first inquiry to final delivery.",
       note: "No marketplace stock. No grey inventory. No anonymous dispatch.",
       guarantee: "100% authentic | Secure checkout | Personal confirmation",
       signals: [
@@ -153,8 +153,7 @@ export const brand: BrandContent = {
     },
     eightMlPromo: {
       title: "Try three first. Commit after skin decides.",
-      body:
-        "Build a 3 x 8mL TARA discovery set for RM99 and move between radiance, control, mineral skin, golden warmth, soft almond florals, heated spice, and warm tea calm before committing to a full bottle.",
+      body: "Build a 3 x 8mL TARA discovery set for RM99 and move between radiance, control, mineral skin, golden warmth, soft almond florals, heated spice, and warm tea calm before committing to a full bottle.",
       primary: {
         label: "Order 3 x 8mL",
         href: "/preorder?checkout=three-8ml-promo#secure-checkout",
@@ -168,19 +167,21 @@ export const brand: BrandContent = {
       note: "Promo price RM99. Select any three 8mL scents; final mix is confirmed by concierge. Ask about launch-window discovery credit before upgrading to a full bottle.",
     },
     preorder: {
-      title: "Reserve yours.",
-      body:
-        "Preorder Aureya, Zephyr, Maris, Eliora, Ashoka, Ardor, or THEON at RM169 while the first 100 bottles last, or start with the 3 x 8mL RM99 promo set.",
+      title: "Reserve THEON or KAMEIRA.",
+      body: "Find your next signature in our latest launches, or discover three scents on skin first.",
       primary: { label: "Preorder Now", href: "/preorder", variant: "primary" },
-      secondary: { label: "Message the House", href: whatsappUrl, variant: "secondary" },
+      secondary: {
+        label: `Try 3 for ${commercialOffers.discoverySet.price}`,
+        href: "/preorder?checkout=three-8ml-promo#secure-checkout",
+        variant: "secondary",
+      },
       note: "Full bottles are RM239 regular after launch allocation.",
     },
   },
   quizPage: {
     eyebrow: "Fragrance Quiz",
     title: "Find your scent identity in eight questions.",
-    body:
-      "Move through instinctive choices. TARA will read the pattern and match you to one of the current olfactive profiles.",
+    body: "Move through instinctive choices. TARA will read the pattern and match you to one of the current olfactive profiles.",
     note: "One answer at a time. No wrong answers. Only different temperatures.",
     intro:
       "This quiz is built like a private scent reading: one prompt at a time, each one unlocking the next. If the result still feels close, choose the 3 x 8mL RM99 promo set before committing to a full bottle.",
@@ -194,13 +195,15 @@ export const brand: BrandContent = {
           {
             value: "golden",
             label: "Golden memory",
-            detail: "Pear light, jasmine silk, amber, and skin musk that glow close.",
+            detail:
+              "Pear light, jasmine silk, amber, and skin musk that glow close.",
             weights: { aureya: 3, zephyr: 0, maris: 1 },
           },
           {
             value: "tailored",
             label: "Urban radiance",
-            detail: "Sparkling citrus, brisk air, polished woods, and warm musk.",
+            detail:
+              "Sparkling citrus, brisk air, polished woods, and warm musk.",
             weights: { aureya: 0, zephyr: 3, maris: 1 },
           },
           {
@@ -230,7 +233,8 @@ export const brand: BrandContent = {
           {
             value: "quiet-pull",
             label: "Quiet pull",
-            detail: "Low-lit, close, and magnetic without asking for attention.",
+            detail:
+              "Low-lit, close, and magnetic without asking for attention.",
             weights: { aureya: 1, zephyr: 1, maris: 3 },
           },
         ],
@@ -278,7 +282,8 @@ export const brand: BrandContent = {
           {
             value: "after-rain",
             label: "After rain",
-            detail: "Wet stone, warm skin, blue air, and a narrow beam of light.",
+            detail:
+              "Wet stone, warm skin, blue air, and a narrow beam of light.",
             weights: { aureya: 1, zephyr: 1, maris: 3 },
           },
         ],
@@ -296,7 +301,8 @@ export const brand: BrandContent = {
           {
             value: "tailoring",
             label: "Glass-tower tailoring",
-            detail: "Structured, modern, and bright with controlled confidence.",
+            detail:
+              "Structured, modern, and bright with controlled confidence.",
             weights: { aureya: 0, zephyr: 3, maris: 1 },
           },
           {
@@ -314,13 +320,15 @@ export const brand: BrandContent = {
           {
             value: "sun-through-curtains",
             label: "Sun through curtains",
-            detail: "Pear brightness, white petals, and golden warmth waking up.",
+            detail:
+              "Pear brightness, white petals, and golden warmth waking up.",
             weights: { aureya: 3, zephyr: 1, maris: 0 },
           },
           {
             value: "dry-urban-air",
             label: "Dry urban air",
-            detail: "Citrus lift, clean metal, and bright space above the city.",
+            detail:
+              "Citrus lift, clean metal, and bright space above the city.",
             weights: { aureya: 0, zephyr: 3, maris: 1 },
           },
           {
@@ -344,7 +352,8 @@ export const brand: BrandContent = {
           {
             value: "clean-magnetism",
             label: "Clean magnetism",
-            detail: "Polish, clean distance, and warmth that draws people closer.",
+            detail:
+              "Polish, clean distance, and warmth that draws people closer.",
             weights: { aureya: 0, zephyr: 3, maris: 1 },
           },
           {
@@ -362,19 +371,22 @@ export const brand: BrandContent = {
           {
             value: "golden-afterimage",
             label: "A golden afterimage",
-            detail: "Someone remembers your softness before they remember your words.",
+            detail:
+              "Someone remembers your softness before they remember your words.",
             weights: { aureya: 3, zephyr: 0, maris: 1 },
           },
           {
             value: "compliment-trail",
             label: "A compliment trail",
-            detail: "Someone asks what you are wearing after you have already moved past.",
+            detail:
+              "Someone asks what you are wearing after you have already moved past.",
             weights: { aureya: 0, zephyr: 3, maris: 1 },
           },
           {
             value: "private-signal",
             label: "A private signal",
-            detail: "Someone cannot explain it, only that they wanted to come closer.",
+            detail:
+              "Someone cannot explain it, only that they wanted to come closer.",
             weights: { aureya: 1, zephyr: 0, maris: 3 },
           },
         ],
@@ -392,7 +404,8 @@ export const brand: BrandContent = {
           {
             value: "shirt-cuff",
             label: "Shirt cuff",
-            detail: "Clean fabric, hand movement, and a quiet flash of control.",
+            detail:
+              "Clean fabric, hand movement, and a quiet flash of control.",
             weights: { aureya: 0, zephyr: 3, maris: 1 },
           },
           {
@@ -430,20 +443,20 @@ export const brand: BrandContent = {
     ],
   },
   preorderPage: {
-    eyebrow: "Preorder",
-    title: "Reserve your scent before the first 100 bottles are gone.",
-    body:
-      "Use secure checkout, the form below, or direct WhatsApp to order Aureya, Zephyr, Maris, Eliora, Ashoka, Ardor, THEON, or the 3 x 8mL RM99 promo set.",
-    note: "Full bottles are RM239 regular. First 100 bottles launch at RM169.",
+    eyebrow: "Order TARA",
+    title: "Choose your scent. Cart first, ToyyibPay next.",
+    body: "For normal purchases, select a 50mL bottle or the 3 x 8mL RM99 discovery set, add it to cart, review your total, then continue to checkout for delivery details and secure ToyyibPay payment.",
+    note: "Need gifting, bridal, event, wholesale, pickup, or scent-matching help? Use the concierge form below instead.",
     perks: [
-      "First 100 full bottles at RM169 before RM239 regular pricing.",
-      "Seven clear full-bottle choices: Aureya, Zephyr, Maris, Eliora, Ashoka, Ardor, and THEON.",
-      "3 x any 8mL Eau de Parfum for RM99 while promo allocation lasts.",
+      "50mL full bottles are RM169 during launch allocation before RM239 regular pricing returns.",
+      "The RM99 discovery set lets you choose any three 8mL Eau de Parfum scents before committing to 50mL.",
+      "Cart-first checkout keeps normal purchases separate from concierge-only requests.",
     ],
     steps: [
-      "Select your full bottle or 3 x 8mL promo set.",
-      "Pay securely, fill the form, or WhatsApp the house.",
-      "We confirm your order, payment, and delivery details personally.",
+      "Select your full bottle or RM99 discovery set.",
+      "Add product and quantity to cart.",
+      "Review cart subtotal, delivery handling, and policies.",
+      "Enter delivery details at checkout, then continue to ToyyibPay.",
     ],
     contactOptions: [
       {
@@ -471,30 +484,29 @@ export const brand: BrandContent = {
       },
       {
         label: "Order Assurance",
-        value: "Every preorder is confirmed personally before fulfillment.",
+        value:
+          "Every concierge request is confirmed personally before fulfillment.",
         icon: "shield",
       },
     ],
     paymentLine:
-      "Secure checkout supports FPX, credit cards, and DuitNow QR when enabled. Concierge confirmation can still be arranged manually by the house.",
+      "For normal checkout, payment is captured on ToyyibPay after you submit delivery details. Concierge requests are not charged until TARA confirms the order path personally.",
     confirmation: {
       eyebrow: "Request Received",
-      title: "Your preorder request is with the house.",
-      body:
-        "TARA will review your choice, allocation, and preferred contact method before confirming payment and delivery details personally.",
+      title: "Your concierge request is with the house.",
+      body: "TARA will review your scent choice, quantity, and support needs before confirming delivery and payment next steps personally.",
       note: "For urgent orders, send the WhatsApp follow-up so the concierge can prioritize your request.",
       steps: [
-        "Check your inbox or WhatsApp for TARA's confirmation.",
-        "Confirm scent, quantity, payment method, and delivery details.",
-        "Receive your launch allocation once payment is finalized.",
+        "Check your inbox or WhatsApp for TARA's reply.",
+        "Confirm scent, quantity, delivery needs, and payment path.",
+        "Complete payment only after the order details are confirmed.",
       ],
     },
   },
   contactPage: {
     eyebrow: "Contact",
     title: "Speak directly with the house.",
-    body:
-      "For private orders, launch collaborations, press requests, content creation, or retail conversations, reach out and TARA will respond with a personal reply.",
+    body: "For private orders, launch collaborations, press requests, content creation, or retail conversations, reach out and TARA will respond with a personal reply.",
     note: "Concierge replies are handled within two working days.",
     details: [
       {

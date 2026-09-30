@@ -10,15 +10,25 @@ import {
   useState,
 } from "react";
 
+import { discoveryError, discoverySelectionLabel } from "@/lib/discovery";
+import { PurchaseReassurance } from "@/components/product/PurchaseReassurance";
+import { ProductAvailability } from "@/components/product/ProductAvailability";
 import { Button } from "@/components/ui/Button";
 import {
   cartStorageKey,
+  cartLineKey,
   sanitizeCartItems,
   type CartItem,
 } from "@/lib/cart";
+import { checkoutExperience } from "@/content/commercial";
 import { analyticsEvents, trackEvent, trackFormStart } from "@/lib/analytics";
 import {
-  duitNowQrEnabled,
+  firstCheckoutError,
+  validateCheckoutDetails,
+  type CheckoutFieldErrors,
+  type CheckoutFieldName,
+} from "@/lib/checkout-validation";
+import {
   formatRinggitFromSen,
   getCheckoutScents,
   paymentsEnabled,
@@ -27,33 +37,25 @@ import {
 const fieldClassName =
   "w-full border-x-0 border-b border-t-0 border-black/14 bg-transparent px-0 py-4 text-sm text-[var(--color-onyx-black)] outline-none transition duration-300 placeholder:text-black/28 focus:border-[var(--color-gold)]";
 
-const paymentOptions = [
-  {
-    value: "online-banking",
-    label: "Online Banking",
-    description: "Pay through ToyyibPay using Malaysian-friendly bank checkout.",
-    channel: "2",
-  },
-  {
-    value: "secure-checkout",
-    label: "ToyyibPay Secure Checkout",
-    description: "Continue to ToyyibPay and use the supported methods shown there.",
-    channel: "2",
-  },
-  ...(duitNowQrEnabled
-    ? [
-        {
-          value: "duitnow-qr",
-          label: "DuitNow QR",
-          description: "Use DuitNow QR if it is available on the hosted payment page.",
-          channel: "2",
-        },
-      ]
-    : []),
-];
+const paymentMethod = "toyyibpay";
+const paymentChannel = "2";
 
 function getFormValue(formData: FormData, key: string) {
   return String(formData.get(key) ?? "").trim();
+}
+
+function FieldError({
+  name,
+  errors,
+}: {
+  name: CheckoutFieldName;
+  errors: CheckoutFieldErrors;
+}) {
+  return errors[name] ? (
+    <span id={`${name}-error`} role="alert" className="block text-sm text-[#8b321f]">
+      {errors[name]}
+    </span>
+  ) : null;
 }
 
 export function CheckoutForm() {
@@ -62,15 +64,17 @@ export function CheckoutForm() {
     () => new Map(checkoutProducts.map((product) => [product.slug, product])),
     [checkoutProducts],
   );
+  const submitLock = useRef(false);
   const hasTrackedStart = useRef(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [hydrated, setHydrated] = useState(false);
   const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle");
   const [message, setMessage] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState(paymentOptions[0]?.value ?? "online-banking");
+  const [fieldErrors, setFieldErrors] = useState<CheckoutFieldErrors>({});
 
   const sanitizeItems = useCallback(
-    (items: CartItem[]) => sanitizeCartItems(items, (slug) => productBySlug.has(slug)),
+    (items: CartItem[]) =>
+      sanitizeCartItems(items, (slug) => productBySlug.has(slug)),
     [productBySlug],
   );
 
@@ -99,9 +103,7 @@ export function CheckoutForm() {
     0,
   );
   const hasItems = cartLines.length > 0;
-  const selectedPaymentOption =
-    paymentOptions.find((option) => option.value === paymentMethod) ?? paymentOptions[0];
-
+  const invalidDiscovery = cartItems.some((item) => discoveryError(item));
   const trackCheckoutFormStart = useCallback(() => {
     if (hasTrackedStart.current) {
       return;
@@ -113,6 +115,15 @@ export function CheckoutForm() {
       formLocation: "cart_checkout_page",
     });
   }, []);
+
+  function handleFormChange(event: FormEvent<HTMLFormElement>) {
+    trackCheckoutFormStart();
+    const target = event.target;
+    if (!(target instanceof HTMLInputElement)) return;
+    const name = target.name as CheckoutFieldName;
+    if (!fieldErrors[name]) return;
+    setFieldErrors((current) => ({ ...current, [name]: undefined }));
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -129,7 +140,10 @@ export function CheckoutForm() {
           setCartItems(sanitizeItems(JSON.parse(savedCart) as CartItem[]));
         }
       } catch {
-        window.localStorage.removeItem(cartStorageKey);
+        setMessage(
+          "We could not load your cart. Please return to your cart and try again.",
+        );
+        setStatus("error");
       } finally {
         setHydrated(true);
       }
@@ -150,7 +164,7 @@ export function CheckoutForm() {
     encodedForm.set("form-name", "tara-cart-checkout");
     encodedForm.set("cart_items", JSON.stringify(cartLines));
     encodedForm.set("cart_total", formatRinggitFromSen(totalInSen));
-    encodedForm.set("payment_method", selectedPaymentOption.value);
+    encodedForm.set("payment_method", paymentMethod);
 
     await fetch("/", {
       method: "POST",
@@ -163,7 +177,47 @@ export function CheckoutForm() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (submitLock.current) return;
     trackCheckoutFormStart();
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    const nextFieldErrors = validateCheckoutDetails(formData);
+    const firstInvalidField = firstCheckoutError(nextFieldErrors);
+    setFieldErrors(nextFieldErrors);
+    if (firstInvalidField) {
+      setStatus("error");
+      setMessage("Review the highlighted details before continuing.");
+      const field = form.elements.namedItem(firstInvalidField);
+      if (field instanceof HTMLElement) {
+        field.focus({ preventScroll: true });
+        field.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      return;
+    }
+    if (invalidDiscovery) {
+      setStatus("error");
+      setMessage(
+        "Choose 3 different available scents for every discovery set before checkout.",
+      );
+      return;
+    }
+    try {
+      const current = sanitizeItems(
+        JSON.parse(window.localStorage.getItem(cartStorageKey) ?? "[]"),
+      );
+      if (JSON.stringify(current) !== JSON.stringify(cartItems)) {
+        setCartItems(current);
+        setStatus("error");
+        setMessage(
+          "Your cart changed. Review the updated order summary before continuing.",
+        );
+        return;
+      }
+    } catch {
+      setStatus("error");
+      setMessage("We could not read your cart. Please try again.");
+      return;
+    }
 
     if (!hasItems) {
       setStatus("error");
@@ -173,18 +227,21 @@ export function CheckoutForm() {
 
     if (!paymentsEnabled) {
       setStatus("error");
-      setMessage("Secure checkout is being connected. Please use WhatsApp concierge for now.");
+      setMessage(
+        "Secure checkout is being connected. Please use WhatsApp concierge for now.",
+      );
       return;
     }
 
+    submitLock.current = true;
     setStatus("submitting");
     setMessage("");
 
-    const formData = new FormData(event.currentTarget);
     const payload = {
       items: cartLines.map((item) => ({
         scentSlug: item.slug,
         quantity: item.quantity,
+        configuration: item.configuration,
       })),
       name: getFormValue(formData, "name"),
       email: getFormValue(formData, "email"),
@@ -196,8 +253,8 @@ export function CheckoutForm() {
       zipcode: getFormValue(formData, "zipcode"),
       country: getFormValue(formData, "country"),
       notes: getFormValue(formData, "notes"),
-      paymentMethod: selectedPaymentOption.value,
-      paymentChannel: selectedPaymentOption.channel,
+      paymentMethod,
+      paymentChannel,
     };
 
     try {
@@ -205,29 +262,54 @@ export function CheckoutForm() {
       trackEvent(analyticsEvents.paymentCheckoutStart, {
         event_category: "commerce",
         provider: "toyyibpay",
-        payment_method: selectedPaymentOption.value,
+        payment_method: paymentMethod,
         item_count: itemCount,
         amount: totalInSen / 100,
       });
 
-      const response = await fetch("/.netlify/functions/create-toyyibpay-bill", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        "/.netlify/functions/create-toyyibpay-bill",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
         },
-        body: JSON.stringify(payload),
-      });
+      );
       const result = (await response.json()) as {
         error?: string;
         paymentUrl?: string;
+        billCode?: string;
+        receiptToken?: string;
       };
 
       if (!response.ok || !result.paymentUrl) {
         throw new Error(result.error ?? "Unable to start secure checkout.");
       }
 
+      trackEvent(analyticsEvents.paymentRedirect, {
+        event_category: "commerce",
+        provider: "toyyibpay",
+        payment_method: paymentMethod,
+        item_count: itemCount,
+        amount: totalInSen / 100,
+      });
+      if (result.receiptToken && result.billCode) {
+        try {
+          window.localStorage.setItem(
+            `tara-receipt-${result.billCode}`,
+            result.receiptToken,
+          );
+        } catch {
+          throw new Error(
+            "We could not save your order reference on this device. Please try again before payment.",
+          );
+        }
+      }
       window.location.assign(result.paymentUrl);
     } catch (error) {
+      submitLock.current = false;
       setStatus("error");
       setMessage(
         error instanceof Error
@@ -279,9 +361,10 @@ export function CheckoutForm() {
         method="POST"
         data-netlify="true"
         netlify-honeypot="bot-field"
+        noValidate
         onSubmit={handleSubmit}
         onFocusCapture={trackCheckoutFormStart}
-        onChangeCapture={trackCheckoutFormStart}
+        onChangeCapture={handleFormChange}
         className="border-y border-black/10 py-8"
       >
         <input type="hidden" name="form-name" value="tara-cart-checkout" />
@@ -292,9 +375,21 @@ export function CheckoutForm() {
           value="New lead from %{formName} (%{submissionId})"
         />
         <input type="hidden" name="submission_source" value="cart-checkout" />
-        <input type="hidden" name="cart_items" value={JSON.stringify(cartLines)} />
-        <input type="hidden" name="cart_total" value={formatRinggitFromSen(totalInSen)} />
-        <input type="hidden" name="payment_method" value={selectedPaymentOption.value} />
+        <input
+          type="hidden"
+          name="cart_items"
+          value={JSON.stringify(cartLines)}
+        />
+        <input
+          type="hidden"
+          name="cart_total"
+          value={formatRinggitFromSen(totalInSen)}
+        />
+        <input
+          type="hidden"
+          name="payment_method"
+          value={paymentMethod}
+        />
 
         <div>
           <p className="text-xs uppercase tracking-[0.28em] text-[var(--color-gold)]">
@@ -311,7 +406,10 @@ export function CheckoutForm() {
                 name="name"
                 autoComplete="name"
                 required
+                aria-invalid={Boolean(fieldErrors.name)}
+                aria-describedby={fieldErrors.name ? "name-error" : undefined}
               />
+              <FieldError name="name" errors={fieldErrors} />
             </label>
             <label className="space-y-3">
               <span className="text-xs uppercase tracking-[0.24em] text-black/58">
@@ -323,7 +421,10 @@ export function CheckoutForm() {
                 name="email"
                 autoComplete="email"
                 required
+                aria-invalid={Boolean(fieldErrors.email)}
+                aria-describedby={fieldErrors.email ? "email-error" : undefined}
               />
+              <FieldError name="email" errors={fieldErrors} />
             </label>
           </div>
           <label className="mt-6 block space-y-3">
@@ -337,7 +438,10 @@ export function CheckoutForm() {
               autoComplete="tel"
               placeholder="+60..."
               required
+              aria-invalid={Boolean(fieldErrors.phone)}
+              aria-describedby={fieldErrors.phone ? "phone-error" : undefined}
             />
+            <FieldError name="phone" errors={fieldErrors} />
           </label>
         </div>
 
@@ -356,18 +460,24 @@ export function CheckoutForm() {
                 name="address_line_1"
                 autoComplete="address-line1"
                 required
+                aria-invalid={Boolean(fieldErrors.address_line_1)}
+                aria-describedby={
+                  fieldErrors.address_line_1
+                    ? "address_line_1-error"
+                    : undefined
+                }
               />
+              <FieldError name="address_line_1" errors={fieldErrors} />
             </label>
             <label className="space-y-3">
               <span className="text-xs uppercase tracking-[0.24em] text-black/58">
-                Address Line 2
+                Address Line 2 <span className="text-black/32">(optional)</span>
               </span>
               <input
                 className={fieldClassName}
                 type="text"
                 name="address_line_2"
                 autoComplete="address-line2"
-                required
               />
             </label>
             <label className="space-y-3">
@@ -393,7 +503,10 @@ export function CheckoutForm() {
                 name="city"
                 autoComplete="address-level2"
                 required
+                aria-invalid={Boolean(fieldErrors.city)}
+                aria-describedby={fieldErrors.city ? "city-error" : undefined}
               />
+              <FieldError name="city" errors={fieldErrors} />
             </label>
             <label className="space-y-3">
               <span className="text-xs uppercase tracking-[0.24em] text-black/58">
@@ -405,7 +518,12 @@ export function CheckoutForm() {
                 name="zipcode"
                 autoComplete="postal-code"
                 required
+                aria-invalid={Boolean(fieldErrors.zipcode)}
+                aria-describedby={
+                  fieldErrors.zipcode ? "zipcode-error" : undefined
+                }
               />
+              <FieldError name="zipcode" errors={fieldErrors} />
             </label>
             <label className="space-y-3">
               <span className="text-xs uppercase tracking-[0.24em] text-black/58">
@@ -418,7 +536,12 @@ export function CheckoutForm() {
                 defaultValue="Malaysia"
                 autoComplete="country-name"
                 required
+                aria-invalid={Boolean(fieldErrors.country)}
+                aria-describedby={
+                  fieldErrors.country ? "country-error" : undefined
+                }
               />
+              <FieldError name="country" errors={fieldErrors} />
             </label>
           </div>
         </div>
@@ -427,37 +550,19 @@ export function CheckoutForm() {
           <p className="text-xs uppercase tracking-[0.28em] text-[var(--color-gold)]">
             3 / Payment Method
           </p>
-          <div className="mt-6 grid gap-3">
-            {paymentOptions.map((option) => {
-              const isSelected = paymentMethod === option.value;
-
-              return (
-                <label
-                  key={option.value}
-                  className={`cursor-pointer border px-4 py-4 transition duration-300 ${
-                    isSelected
-                      ? "border-[rgba(202,158,91,0.55)] bg-[rgba(202,158,91,0.08)]"
-                      : "border-black/10 hover:border-white/22"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="payment_method_choice"
-                    value={option.value}
-                    checked={isSelected}
-                    onChange={() => setPaymentMethod(option.value)}
-                    className="sr-only"
-                  />
-                  <span className="block text-sm font-medium text-[var(--color-onyx-black)]">
-                    {option.label}
-                  </span>
-                  <span className="mt-2 block text-sm leading-6 text-black/54">
-                    {option.description}
-                  </span>
-                </label>
-              );
-            })}
+          <div className="mt-6 border border-[rgba(202,158,91,0.55)] bg-[rgba(202,158,91,0.08)] px-4 py-4">
+            <p className="text-base font-medium text-[var(--color-onyx-black)]">
+              Pay securely via ToyyibPay
+            </p>
+            <p className="mt-2 text-sm leading-7 text-black/54">
+              Continue to ToyyibPay to use the payment methods available for
+              your order, including Malaysian-friendly online banking options
+              where enabled.
+            </p>
           </div>
+          <p className="mt-5 text-sm leading-7 text-black/54">
+            {checkoutExperience.paymentFinality}
+          </p>
         </div>
 
         <label className="mt-6 block space-y-3">
@@ -467,19 +572,26 @@ export function CheckoutForm() {
           <textarea
             className={`${fieldClassName} min-h-28 resize-y`}
             name="notes"
-            placeholder="Optional: list your preferred 8mL trio, delivery preference, gifting note, or anything the house should know."
+            placeholder="Optional: delivery preference, gifting note, or anything the house should know. Your selected discovery scents are already attached to the order."
           />
         </label>
 
         <div className="mt-8 grid gap-3 sm:flex sm:flex-wrap">
-          <Button type="submit" variant="primary" disabled={status === "submitting"}>
+          <Button
+            type="submit"
+            variant="primary"
+            disabled={status === "submitting" || invalidDiscovery}
+          >
             {status === "submitting" ? "Redirecting..." : "Checkout Securely"}
           </Button>
           <Button href="/cart" variant="secondary">
             Back To Cart
           </Button>
         </div>
-        <p aria-live="polite" className="mt-4 text-sm leading-7 text-[var(--color-copy)]">
+        <p
+          aria-live="polite"
+          className="mt-4 text-sm leading-7 text-[var(--color-copy)]"
+        >
           {status === "error" ? message : null}
         </p>
       </form>
@@ -490,7 +602,10 @@ export function CheckoutForm() {
         </p>
         <div className="mt-6 divide-y divide-black/10 border-y border-black/10">
           {cartLines.map((item) => (
-            <article key={item.slug} className="grid grid-cols-[4.5rem_1fr] gap-4 py-4">
+            <article
+              key={cartLineKey(item)}
+              className="grid grid-cols-[4.5rem_1fr] gap-4 py-4"
+            >
               <div className="relative aspect-square overflow-hidden rounded-[0.85rem] border border-black/10">
                 <Image
                   src={item.product.visual.src}
@@ -504,6 +619,20 @@ export function CheckoutForm() {
                 <p className="text-base font-medium tracking-[-0.03em] text-[var(--color-onyx-black)]">
                   {item.product.name}
                 </p>
+                {item.configuration && (
+                  <p className="mt-2 text-sm font-semibold leading-7">
+                    {discoverySelectionLabel(item.configuration)}
+                  </p>
+                )}
+                <ProductAvailability product={item.product} className="mt-2" />
+                {discoveryError(item) && (
+                  <p role="alert" className="mt-2 text-sm text-[#8b321f]">
+                    {discoveryError(item)}{" "}
+                    <a href="/cart" className="underline">
+                      Return to cart to replace this set.
+                    </a>
+                  </p>
+                )}
                 <p className="mt-1 text-xs uppercase tracking-[0.2em] text-black/42">
                   {item.product.price} / Qty {item.quantity}
                 </p>
@@ -520,12 +649,22 @@ export function CheckoutForm() {
             <span>{itemCount}</span>
           </div>
           <div className="flex items-center justify-between gap-4 text-sm text-black/58">
+            <span>Subtotal</span>
+            <span>{formatRinggitFromSen(totalInSen)}</span>
+          </div>
+          <div className="flex items-center justify-between gap-4 text-sm text-black/58">
+            <span>Shipping</span>
+            <span className="max-w-48 text-right">
+              {checkoutExperience.shippingAtCheckout}
+            </span>
+          </div>
+          <div className="flex items-center justify-between gap-4 text-sm text-black/58">
             <span>Payment</span>
-            <span>{selectedPaymentOption.label}</span>
+            <span>ToyyibPay</span>
           </div>
           <div className="flex items-center justify-between gap-4 border-t border-black/10 pt-4 text-[var(--color-onyx-black)]">
             <span className="text-xs uppercase tracking-[0.22em] text-black/46">
-              Total
+              Estimated total before shipping
             </span>
             <span className="text-4xl font-medium tracking-[-0.06em]">
               {formatRinggitFromSen(totalInSen)}
@@ -533,9 +672,11 @@ export function CheckoutForm() {
           </div>
         </div>
         <p className="mt-5 text-sm leading-7 text-black/54">
-          You will be redirected to ToyyibPay after checkout. TARA receives your
-          delivery details before payment starts.
+          ToyyibPay will show {formatRinggitFromSen(totalInSen)} for the items in
+          this order. Shipping is not included in that amount and will not be
+          silently added during this handoff.
         </p>
+        <PurchaseReassurance compact className="mt-4" />
       </aside>
     </div>
   );

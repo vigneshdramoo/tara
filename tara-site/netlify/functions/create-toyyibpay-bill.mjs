@@ -1,27 +1,15 @@
+import {
+  createReceiptToken,
+  buildOrderSnapshot,
+  saveDiscoveryOrder,
+} from "./lib/discovery-orders.mjs";
 import { sendOrderNotification } from "./lib/order-email.mjs";
-
-const catalog = {
-  aureya: {
-    name: "Aureya",
-    priceInSen: 16900,
-  },
-  zephyr: {
-    name: "Zephyr",
-    priceInSen: 16900,
-  },
-  maris: {
-    name: "Maris",
-    priceInSen: 16900,
-  },
-  marin: {
-    name: "Maris",
-    priceInSen: 16900,
-  },
-  "three-8ml-promo": {
-    name: "3 x 8mL Promo Set",
-    priceInSen: 9900,
-  },
-};
+import {
+  CheckoutValidationError,
+  checkoutItemSummary,
+  maxCheckoutQuantityTotal,
+  normalizeCheckoutItems,
+} from "./lib/checkout-catalog.mjs";
 
 const duitNowQrEnabled = process.env.TOYYIBPAY_ENABLE_DUITNOW_QR === "true";
 const merchantName = "TARA SCENTS";
@@ -54,33 +42,6 @@ function sanitizeText(value, maxLength) {
 
 function buildOrderReference() {
   return `TARA-${Date.now()}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`;
-}
-
-function normalizeCartItems(body) {
-  const rawItems = Array.isArray(body.items)
-    ? body.items
-    : body.scentSlug
-      ? [{ scentSlug: body.scentSlug, quantity: body.quantity ?? 1 }]
-      : [];
-  const mergedItems = new Map();
-
-  rawItems.forEach((item) => {
-    const slug = String(item.scentSlug ?? item.slug ?? "").trim();
-    const product = catalog[slug];
-    const quantity = Number(item.quantity ?? 1);
-
-    if (!product || !Number.isInteger(quantity) || quantity < 1 || quantity > 12) {
-      return;
-    }
-
-    mergedItems.set(slug, (mergedItems.get(slug) ?? 0) + quantity);
-  });
-
-  return Array.from(mergedItems.entries()).map(([slug, quantity]) => ({
-    slug,
-    ...catalog[slug],
-    quantity: Math.min(12, quantity),
-  }));
 }
 
 function getProviderErrorMessage(result) {
@@ -131,189 +92,248 @@ function buildDeliveryAddress({
     .join("\n");
 }
 
-export async function handler(event) {
-  if (event.httpMethod !== "POST") {
-    return {
-      statusCode: 405,
-      body: JSON.stringify({ error: "Method not allowed." }),
-    };
-  }
+function validEmail(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
 
-  const userSecretKey = process.env.TOYYIBPAY_SECRET_KEY;
-  const categoryCode = process.env.TOYYIBPAY_CATEGORY_CODE;
+function validPhone(value) {
+  const digits = value.replace(/\D/g, "");
+  return /^\+?[0-9][0-9\s().-]*$/.test(value) && digits.length >= 8 && digits.length <= 15;
+}
 
-  if (!userSecretKey || !categoryCode) {
-    return {
-      statusCode: 503,
-      body: JSON.stringify({
-        error:
-          "Secure checkout is not connected yet. Add toyyibPay credentials in Netlify to activate it.",
-      }),
-    };
-  }
-
-  try {
-    const body = JSON.parse(event.body ?? "{}");
-    const cartItems = normalizeCartItems(body);
-    const cartQuantity = cartItems.reduce((total, item) => total + item.quantity, 0);
-
-    if (cartItems.length === 0 || cartQuantity > 24) {
+export function createHandler({
+  saveOrder = saveDiscoveryOrder,
+  notify = sendOrderNotification,
+  fetcher = fetch,
+} = {}) {
+  return async function handler(event) {
+    if (event.httpMethod !== "POST") {
       return {
-        statusCode: 400,
-        body: JSON.stringify({ error: "Invalid checkout request." }),
+        statusCode: 405,
+        body: JSON.stringify({ error: "Method not allowed." }),
       };
     }
 
-    const name = String(body.name ?? "").trim();
-    const email = String(body.email ?? "").trim();
-    const phone = String(body.phone ?? "").trim();
-    const addressLine1 = String(body.addressLine1 ?? "").trim();
-    const addressLine2 = String(body.addressLine2 ?? "").trim();
-    const addressLine3 = String(body.addressLine3 ?? "").trim();
-    const city = String(body.city ?? "").trim();
-    const zipcode = String(body.zipcode ?? "").trim();
-    const country = String(body.country ?? "").trim();
+    const userSecretKey = process.env.TOYYIBPAY_SECRET_KEY;
+    const categoryCode = process.env.TOYYIBPAY_CATEGORY_CODE;
 
-    if (!name || !email || !phone) {
+    if (!userSecretKey || !categoryCode) {
       return {
-        statusCode: 400,
-        body: JSON.stringify({ error: "Missing customer details." }),
-      };
-    }
-
-    if (!addressLine1 || !addressLine2 || !city || !zipcode || !country) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ error: "Missing delivery address." }),
-      };
-    }
-
-    const orderReference = buildOrderReference();
-    const siteUrl = getSiteUrl(event);
-    const baseUrl = getToyyibBaseUrl();
-    const paymentMethod = sanitizeText(
-      String(body.paymentMethod ?? "online-banking"),
-      24,
-    );
-    const amountInSen = cartItems.reduce(
-      (total, item) => total + item.priceInSen * item.quantity,
-      0,
-    );
-    const itemSummary = cartItems
-      .map((item) => `${item.name} x ${item.quantity}`)
-      .join(", ");
-    const billName =
-      cartItems.length === 1
-        ? `${cartItems[0].name} x ${cartItems[0].quantity}`
-        : `TARA Cart ${cartQuantity} items`;
-
-    const payload = new URLSearchParams({
-      userSecretKey,
-      categoryCode,
-      billName: sanitizeText(billName, 30) || "TARA Payment",
-      billDescription:
-        sanitizeText(
-          `${itemSummary} ${paymentMethod} checkout for ${merchantName}.`,
-          100,
-        ) || "TARA secure checkout",
-      billPriceSetting: "1",
-      billPayorInfo: "1",
-      billAmount: String(amountInSen),
-      billReturnUrl: `${siteUrl}/payment/result`,
-      billCallbackUrl: `${siteUrl}/.netlify/functions/toyyibpay-callback`,
-      billExternalReferenceNo: orderReference,
-      billTo: sanitizeText(name, 60) || "TARA Customer",
-      billEmail: email,
-      billPhone: phone.replace(/[^\d+]/g, ""),
-      billSplitPayment: "0",
-      billPaymentChannel: getPaymentChannel(body),
-      billDisplayMerchant: "1",
-      billContentEmail:
-        `Your hosted payment for ${merchantName} is ready. For support, contact ${merchantPhone} or ${merchantEmail}.`,
-    });
-
-    if (duitNowQrEnabled) {
-      payload.set("enableDuitNowQR", "1");
-      payload.set("chargeDuitNowQR", "0");
-    }
-
-    const response = await fetch(`${baseUrl}/index.php/api/createBill`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: payload.toString(),
-    });
-
-    const result = await response.json();
-    const billCode = Array.isArray(result) ? result[0]?.BillCode : undefined;
-
-    if (!response.ok || !billCode) {
-      console.error("ToyyibPay createBill failed", {
-        status: response.status,
-        providerResult: result,
-      });
-
-      return {
-        statusCode: 502,
+        statusCode: 503,
         body: JSON.stringify({
-          error: getProviderErrorMessage(result),
+          error:
+            "Secure checkout is not connected yet. Add toyyibPay credentials in Netlify to activate it.",
         }),
       };
     }
 
-    const paymentUrl = `${baseUrl}/${billCode}`;
+    try {
+      const body = JSON.parse(event.body ?? "{}");
+      const cartItems = normalizeCheckoutItems(body);
+      const cartQuantity = cartItems.reduce(
+        (total, item) => total + item.quantity,
+        0,
+      );
 
-    await sendOrderNotification(event, {
-      subject: `New TARA checkout: ${orderReference}`,
-      eventLabel: "Checkout Started",
-      orderReference,
-      itemSummary,
-      customerName: name,
-      customerEmail: email,
-      customerPhone: phone,
-      deliveryAddress: buildDeliveryAddress({
-        addressLine1,
-        addressLine2,
-        addressLine3,
-        city,
-        zipcode,
-        country,
-      }),
-      amount: formatRinggit(amountInSen),
-      paymentStatus: `Awaiting payment / ${paymentMethod}`,
-      billCode,
-      paymentUrl,
-      notes: String(body.notes ?? "").trim(),
-      submittedAt: new Date().toLocaleString("en-MY", {
-        dateStyle: "medium",
-        timeStyle: "short",
-        timeZone: "Asia/Kuala_Lumpur",
-      }),
-    }).catch((error) => {
-      console.error("Order notification failed", {
-        message: error instanceof Error ? error.message : "Unknown error",
+      if (cartItems.length === 0 || cartQuantity > maxCheckoutQuantityTotal) {
+        return {
+          statusCode: 400,
+          body: JSON.stringify({ error: "Invalid checkout request." }),
+        };
+      }
+
+      const name = String(body.name ?? "").trim();
+      const email = String(body.email ?? "").trim();
+      const phone = String(body.phone ?? "").trim();
+      const addressLine1 = String(body.addressLine1 ?? "").trim();
+      const addressLine2 = String(body.addressLine2 ?? "").trim();
+      const addressLine3 = String(body.addressLine3 ?? "").trim();
+      const city = String(body.city ?? "").trim();
+      const zipcode = String(body.zipcode ?? "").trim();
+      const country = String(body.country ?? "").trim();
+
+      if (!name || !email || !phone || !validEmail(email) || !validPhone(phone)) {
+        return {
+          statusCode: 400,
+          body: JSON.stringify({ error: "Invalid customer details." }),
+        };
+      }
+
+      if (!addressLine1 || !city || !zipcode || !country) {
+        return {
+          statusCode: 400,
+          body: JSON.stringify({ error: "Missing delivery address." }),
+        };
+      }
+
+      const orderReference = buildOrderReference();
+      const siteUrl = getSiteUrl(event);
+      const baseUrl = getToyyibBaseUrl();
+      const paymentMethod = sanitizeText(
+        String(body.paymentMethod ?? "online-banking"),
+        24,
+      );
+      const amountInSen = cartItems.reduce(
+        (total, item) => total + item.priceInSen * item.quantity,
+        0,
+      );
+      const itemSummary = checkoutItemSummary(cartItems);
+      const hasDiscovery = cartItems.some((item) => item.configuration);
+      const receiptToken = hasDiscovery ? createReceiptToken() : undefined;
+      const orderSnapshot = hasDiscovery
+        ? buildOrderSnapshot(
+            orderReference,
+            cartItems,
+            amountInSen,
+            receiptToken,
+          )
+        : null;
+      // Do not offer payment until fulfillment has a durable, validated configuration.
+      if (orderSnapshot) {
+        try {
+          await saveOrder(event, orderSnapshot);
+        } catch {
+          return {
+            statusCode: 503,
+            body: JSON.stringify({
+              error:
+                "We could not save your order. Your cart is safe; please try again.",
+            }),
+          };
+        }
+      }
+      const billName =
+        cartItems.length === 1
+          ? `${cartItems[0].name} x ${cartItems[0].quantity}`
+          : `TARA Cart ${cartQuantity} items`;
+
+      const payload = new URLSearchParams({
+        userSecretKey,
+        categoryCode,
+        billName: sanitizeText(billName, 30) || "TARA Payment",
+        billDescription:
+          sanitizeText(
+            `${itemSummary} ${paymentMethod} checkout for ${merchantName}.`,
+            100,
+          ) || "TARA secure checkout",
+        billPriceSetting: "1",
+        billPayorInfo: "1",
+        billAmount: String(amountInSen),
+        billReturnUrl: `${siteUrl}/payment/result`,
+        billCallbackUrl: `${siteUrl}/.netlify/functions/toyyibpay-callback`,
+        billExternalReferenceNo: orderReference,
+        billTo: sanitizeText(name, 60) || "TARA Customer",
+        billEmail: email,
+        billPhone: phone.replace(/[^\d+]/g, ""),
+        billSplitPayment: "0",
+        billPaymentChannel: getPaymentChannel(body),
+        billDisplayMerchant: "1",
+        billContentEmail: `Your order: ${itemSummary}. Your hosted payment for ${merchantName} is ready. For support, contact ${merchantPhone} or ${merchantEmail}.`,
       });
-    });
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        provider: "toyyibpay",
+      if (duitNowQrEnabled) {
+        payload.set("enableDuitNowQR", "1");
+        payload.set("chargeDuitNowQR", "0");
+      }
+
+      const response = await fetcher(`${baseUrl}/index.php/api/createBill`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: payload.toString(),
+      });
+
+      const result = await response.json();
+      const billCode = Array.isArray(result) ? result[0]?.BillCode : undefined;
+
+      if (!response.ok || !billCode) {
+        console.error("ToyyibPay createBill failed", {
+          status: response.status,
+          providerResult: result,
+        });
+
+        return {
+          statusCode: 502,
+          body: JSON.stringify({
+            error: getProviderErrorMessage(result),
+          }),
+        };
+      }
+
+      const paymentUrl = `${baseUrl}/${billCode}`;
+      if (orderSnapshot) {
+        try {
+          await saveOrder(event, orderSnapshot, billCode);
+        } catch {
+          return {
+            statusCode: 503,
+            body: JSON.stringify({
+              error:
+                "We could not save your order reference. Your cart is safe; please try again.",
+            }),
+          };
+        }
+      }
+
+      await notify(event, {
+        subject: `New TARA checkout: ${orderReference}`,
+        eventLabel: "Checkout Started",
         orderReference,
+        itemSummary,
+        orderItems: JSON.stringify(cartItems),
+        customerName: name,
+        customerEmail: email,
+        customerPhone: phone,
+        deliveryAddress: buildDeliveryAddress({
+          addressLine1,
+          addressLine2,
+          addressLine3,
+          city,
+          zipcode,
+          country,
+        }),
+        amount: formatRinggit(amountInSen),
+        paymentStatus: `Awaiting payment / ${paymentMethod}`,
         billCode,
         paymentUrl,
-      }),
-    };
-  } catch (error) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        error:
-          error instanceof Error
-            ? error.message
-            : "Unable to create the hosted payment bill.",
-      }),
-    };
-  }
+        notes: String(body.notes ?? "").trim(),
+        submittedAt: new Date().toLocaleString("en-MY", {
+          dateStyle: "medium",
+          timeStyle: "short",
+          timeZone: "Asia/Kuala_Lumpur",
+        }),
+      }).catch((error) => {
+        console.error("Order notification failed", {
+          message: error instanceof Error ? error.message : "Unknown error",
+        });
+      });
+
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          provider: "toyyibpay",
+          orderReference,
+          billCode,
+          paymentUrl,
+          ...(receiptToken ? { receiptToken } : {}),
+        }),
+      };
+    } catch (error) {
+      return {
+        statusCode:
+          error instanceof CheckoutValidationError ||
+          error instanceof SyntaxError
+            ? 400
+            : 500,
+        body: JSON.stringify({
+          error:
+            error instanceof CheckoutValidationError
+              ? error.message
+              : "Unable to create the hosted payment bill. Your cart is safe; please try again.",
+        }),
+      };
+    }
+  };
 }
+export const handler = createHandler();

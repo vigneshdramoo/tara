@@ -17,3 +17,21 @@ export function getExclusiveScents() {
 }
 
 export { scents };
+
+// Homepage merchandising only; retain the canonical order for the remaining scents.
+export const latestLaunchSlugs = ["theon", "kameira"] as const;
+export function getLatestLaunches() {
+  return latestLaunchSlugs.flatMap((slug) => {
+    const scent = getScentBySlug(slug);
+    return scent && scent.status === "available" ? [scent] : [];
+  });
+}
+export function isLatestLaunch(slug: string) {
+  return latestLaunchSlugs.some((launch) => launch === slug);
+}
+export function getHomepageScents() {
+  return [
+    ...getLatestLaunches(),
+    ...getAvailableScents().filter((scent) => !isLatestLaunch(scent.slug)),
+  ];
+}

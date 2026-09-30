@@ -1,3 +1,4 @@
+import { getLatestLaunches } from "@/lib/catalog";
 import type { CalloutContent } from "@/types/content";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
@@ -17,9 +18,14 @@ export function ConversionCta({ content, trustLine }: ConversionCtaProps) {
           </p>
           <div>
             <p className="text-xs uppercase tracking-[0.34em] text-black/62">
-              First 100 Bottles / RM169
+              {getLatestLaunches()
+                .map(
+                  (scent) =>
+                    `${scent.name} ${scent.launchPrice ?? scent.price}`,
+                )
+                .join(" · ")}
             </p>
-            <h2 className="mt-6 max-w-5xl text-[clamp(4rem,11vw,10rem)] font-medium leading-[0.82] tracking-[-0.075em] text-balance">
+            <h2 className="mt-6 max-w-5xl text-[clamp(2.7rem,7vw,6rem)] font-medium leading-[0.82] tracking-[-0.075em] text-balance">
               {content.title}
             </h2>
             <p className="mt-7 max-w-2xl text-base leading-8 text-black/78 sm:text-lg">

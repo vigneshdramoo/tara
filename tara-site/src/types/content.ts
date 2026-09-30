@@ -26,11 +26,41 @@ export type VisualAsset = {
   priority?: boolean;
   fit?: "cover" | "contain";
   position?: string;
+  width?: number;
+  height?: number;
+  responsiveWidths?: number[];
 };
 
 export type ScentGalleryAsset = VisualAsset & {
   title: string;
   caption: string;
+};
+
+export type ScentProfile = {
+  family: string;
+  audienceLabel: string;
+  temperature: "Cool" | "Balanced" | "Warm";
+  sweetness: "Dry" | "Soft" | "Creamy";
+  presence: "Skin-close" | "Noticeable" | "Magnetic";
+  sampleAvailable: boolean;
+  quizArchetype: string;
+};
+
+export type ScentFilterCriteria = {
+  familyIncludes?: readonly string[];
+  lineIncludes?: readonly string[];
+  moodIncludes?: readonly string[];
+  wearIncludes?: readonly string[];
+  temperature?: readonly ScentProfile["temperature"][];
+  sweetness?: readonly ScentProfile["sweetness"][];
+  presence?: readonly ScentProfile["presence"][];
+};
+
+export type ScentFilterSegment = {
+  id: string;
+  label: string;
+  description: string;
+  criteria?: ScentFilterCriteria;
 };
 
 export type SectionIntro = {
@@ -147,6 +177,27 @@ export type Scent = {
   name: string;
   audience: string;
   status: "available" | "upcoming" | "exclusive";
+  number?: string;
+  fragranceJourney?: string[];
+  interactiveGallery?: boolean;
+  theme?:
+    | "aureya"
+    | "kameira"
+    | "zephyr"
+    | "maris"
+    | "eliora"
+    | "ardor"
+    | "ashoka"
+    | "theon";
+  primaryHook?: string;
+  description?: string;
+  storySignature?: string;
+  editorialHeading?: string;
+  editorialBody?: string;
+  travelPrice?: string;
+  editorial?: VisualAsset;
+  editorialMobile?: VisualAsset;
+  seo?: { title: string; description: string };
   isNew?: boolean;
   tagline: string;
   line: string;
@@ -157,6 +208,7 @@ export type Scent = {
     heart: string[];
     base: string[];
   };
+  profile: ScentProfile;
   mood: string[];
   wear: string[];
   finish: string;

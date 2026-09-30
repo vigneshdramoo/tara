@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { discoverySetSlug, discoveryHref } from "@/lib/discovery";
 import { Button } from "@/components/ui/Button";
 import {
   cartStorageKey,
@@ -9,7 +10,7 @@ import {
   sanitizeCartItems,
   type CartItem,
 } from "@/lib/cart";
-import { trackEvent } from "@/lib/analytics";
+import { analyticsEvents, trackEvent } from "@/lib/analytics";
 import { getCheckoutScents } from "@/lib/payments";
 
 type QuickAddButtonProps = {
@@ -22,7 +23,9 @@ type QuickAddButtonProps = {
 };
 
 const checkoutProducts = getCheckoutScents();
-const productBySlug = new Map(checkoutProducts.map((product) => [product.slug, product]));
+const productBySlug = new Map(
+  checkoutProducts.map((product) => [product.slug, product]),
+);
 
 function readSavedCart() {
   try {
@@ -85,14 +88,28 @@ export function QuickAddButton({
 
     timeoutRef.current = setTimeout(() => setAdded(false), 1800);
 
-    trackEvent("add_to_cart", {
+    trackEvent(analyticsEvents.productAddToCart, {
       event_category: "commerce",
       selected_scent: slug,
       item_name: product.name,
+      item_id: product.slug,
+      quantity: 1,
       amount: product.priceInSen / 100,
       link_location: trackingLocation,
     });
+    trackEvent(analyticsEvents.product50mlAddedToCart, {
+      item_id: product.slug,
+      quantity: 1,
+      link_location: trackingLocation,
+    });
   }
+
+  if (slug === discoverySetSlug)
+    return (
+      <Button href={discoveryHref} trackingLocation={trackingLocation}>
+        Choose 3 scents
+      </Button>
+    );
 
   return (
     <Button
@@ -102,7 +119,9 @@ export function QuickAddButton({
       onClick={addToCart}
       disabled={!product}
       aria-live="polite"
-      aria-label={ariaLabel ?? (product ? `Add ${product.name} to cart` : label)}
+      aria-label={
+        ariaLabel ?? (product ? `Add ${product.name} to cart` : label)
+      }
       className={className}
     >
       {added ? addedLabel : label}

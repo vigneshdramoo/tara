@@ -6,7 +6,7 @@ import { buildPageMetadata } from "@/lib/seo";
 export const metadata: Metadata = buildPageMetadata({
   title: "Find Your Light Scent Quiz",
   description:
-    "Take TARA's Find Your Light quiz and discover whether your olfactive portrait is Aureya, Zephyr, Maris, Eliora, Ashoka, or Ardor.",
+    "Take TARA's Find Your Light quiz and discover whether your olfactive portrait is Aureya, Zephyr, Maris, Eliora, Ashoka, Ardor, THEON, or KAMEIRA.",
   path: "/quiz",
   socialTitle: "Find Your Light - TARA Scent Quiz",
   socialImage: {

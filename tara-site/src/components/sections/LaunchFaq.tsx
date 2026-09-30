@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { brand } from "@/content/brand";
 
-const launchFaqs = [
+export const launchFaqs = [
   {
     question: "How much is shipping?",
     answer:
@@ -21,14 +21,14 @@ const launchFaqs = [
   {
     question: "Can I see the full top, heart, and base notes?",
     answer:
-      "Yes. Each scent page breaks down the opening, emotional heart, dry-down, mood, and best wear occasions so you can compare before ordering.",
+      "Each scent page shares its notes or fragrance journey, mood, and wear occasions so you can compare before ordering.",
     href: "/scents",
     cta: "Compare scents",
   },
   {
     question: "Where are the spray and dry-down videos?",
     answer:
-      "Studio scent films are being prepared for the full scent family, including THEON. Follow Instagram or join launch updates to see spray texture, first impression, and dry-down clips as they release.",
+      "Studio scent films are being prepared for the full scent family, including THEON and KAMEIRA. Follow Instagram or join launch updates to see spray texture, first impression, and dry-down clips as they release.",
     href: brand.instagramUrl,
     cta: "Follow on Instagram",
   },
@@ -47,9 +47,8 @@ export function LaunchFaq() {
               Clear answers, no guesswork.
             </h2>
             <p className="mt-6 max-w-md text-base leading-8 text-[var(--color-copy)]">
-              The important purchase details are now compressed into quick
-              accordions, so mobile shoppers can decide without digging through
-              long policy pages.
+              Find answers about delivery, returns, and choosing your scent.
+              Full policies are linked below each answer.
             </p>
           </div>
 

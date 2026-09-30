@@ -25,14 +25,17 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   background:
-    radial-gradient(circle at top left, rgba(202, 158, 91, 0.14), transparent 24%),
-    radial-gradient(circle at top right, rgba(202, 158, 91, 0.08), transparent 20%),
-    linear-gradient(
-      180deg,
-      #fbf8f1 0%,
-      var(--color-ivory) 42%,
-      #f1ece2 100%
+    radial-gradient(
+      circle at top left,
+      rgba(202, 158, 91, 0.14),
+      transparent 24%
     ),
+    radial-gradient(
+      circle at top right,
+      rgba(202, 158, 91, 0.08),
+      transparent 20%
+    ),
+    linear-gradient(180deg, #fbf8f1 0%, var(--color-ivory) 42%, #f1ece2 100%),
     var(--color-ivory);
   color: var(--color-onyx-black);
   font-family: var(--font-sans), sans-serif;
@@ -69,7 +72,10 @@ body::before {
 }
 
 a {
-  transition: color 200ms ease, border-color 200ms ease, background-color 200ms ease;
+  transition:
+    color 200ms ease,
+    border-color 200ms ease,
+    background-color 200ms ease;
 }
 
 ::selection {
@@ -101,4 +107,377 @@ a {
       text-wrap: balance;
     }
   }
+}
+
+/* Keep shopping controls clear of menus, form entry, and the footer. */
+:focus-visible {
+  outline: 3px solid #775426;
+  outline-offset: 4px;
+}
+summary {
+  min-height: 44px;
+}
+body:has([data-mobile-sticky-cta]) footer {
+  padding-bottom: calc(8rem + env(safe-area-inset-bottom));
+}
+body[data-menu-open] [data-mobile-sticky-cta],
+body:has(dialog[open]) [data-mobile-sticky-cta],
+body:has([aria-modal="true"]) [data-mobile-sticky-cta],
+body:has(input:focus, textarea:focus, select:focus) [data-mobile-sticky-cta] {
+  visibility: hidden;
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (max-width: 1279px) {
+  body:has([data-mobile-sticky-cta]) .floating-whatsapp {
+    position: relative;
+    bottom: auto;
+    right: auto;
+    margin: 0 1rem calc(7rem + env(safe-area-inset-bottom));
+  }
+}
+
+/* One page-scoped presentation system; house tokens and commerce are untouched. */
+[data-scent-theme="aureya"] {
+  --scent-canvas: #f8ebdd;
+  --scent-surface: #f8ebdd;
+  --scent-surface-soft: #f6c6d0;
+  --scent-text: #7a4e56;
+  --scent-text-muted: #7a4e56;
+  --scent-display: #7a4e56;
+  --scent-accent: #ca9e5b;
+  --scent-micro-accent: #b9828a;
+  --scent-border: #b9828a;
+  --scent-divider: rgb(185 130 138 / 55%);
+  --scent-cta: #7a4e56;
+  --scent-cta-text: #f8ebdd;
+  --scent-focus: #7a4e56;
+  --scent-selection: #f6c6d0;
+  --scent-selection-text: #7a4e56;
+  --scent-hover: rgb(185 130 138 / 15%);
+}
+[data-scent-theme="kameira"] {
+  --scent-canvas: #4a1828;
+  --scent-surface: #4a1828;
+  --scent-surface-soft: rgb(247 243 235 / 5%);
+  --scent-text: #f7f3eb;
+  --scent-text-muted: #f7f3eb;
+  --scent-display: #ca9e5b;
+  --scent-accent: #ca9e5b;
+  --scent-micro-accent: #8f4054;
+  --scent-border: rgb(247 243 235 / 65%);
+  --scent-divider: rgb(202 158 91 / 40%);
+  --scent-cta: #f7f3eb;
+  --scent-cta-text: #4a1828;
+  --scent-focus: #f7f3eb;
+  --scent-selection: #ca9e5b;
+  --scent-selection-text: #4a1828;
+  --scent-hover: rgb(247 243 235 / 10%);
+}
+[data-scent-theme="zephyr"] {
+  --scent-canvas: #18365a;
+  --scent-surface: #18365a;
+  --scent-surface-soft: rgb(113 137 154 / 24%);
+  --scent-text: #e8e7e1;
+  --scent-text-muted: #e8e7e1;
+  --scent-display: #e8e7e1;
+  --scent-accent: #ca9e5b;
+  --scent-micro-accent: #71899a;
+  --scent-border: rgb(232 231 225 / 65%);
+  --scent-divider: rgb(202 158 91 / 38%);
+  --scent-cta: #e8e7e1;
+  --scent-cta-text: #18365a;
+  --scent-focus: #e8e7e1;
+  --scent-selection: #ca9e5b;
+  --scent-selection-text: #18365a;
+  --scent-hover: rgb(232 231 225 / 10%);
+}
+[data-scent-theme="maris"] {
+  --scent-canvas: #2e3437;
+  --scent-surface: #063c41;
+  --scent-surface-soft: rgb(0 85 90 / 72%);
+  --scent-text: #dce2e1;
+  --scent-text-muted: #dce2e1;
+  --scent-display: #cbb98a;
+  --scent-accent: #cbb98a;
+  --scent-micro-accent: #c08a4a;
+  --scent-border: rgb(220 226 225 / 62%);
+  --scent-divider: rgb(203 185 138 / 38%);
+  --scent-cta: #dce2e1;
+  --scent-cta-text: #063c41;
+  --scent-focus: #f7ffff;
+  --scent-selection: #c08a4a;
+  --scent-selection-text: #1e2a2e;
+  --scent-hover: rgb(220 226 225 / 10%);
+}
+[data-scent-theme="eliora"] {
+  --scent-canvas: #3e2f3d;
+  --scent-surface: #3e2f3d;
+  --scent-surface-soft: rgb(122 100 112 / 36%);
+  --scent-text: #ede3d6;
+  --scent-text-muted: #ede3d6;
+  --scent-display: #e8c879;
+  --scent-accent: #e8c879;
+  --scent-micro-accent: #8c7b6e;
+  --scent-border: rgb(237 227 214 / 62%);
+  --scent-divider: rgb(232 200 121 / 36%);
+  --scent-cta: #ede3d6;
+  --scent-cta-text: #123a43;
+  --scent-focus: #f7ffff;
+  --scent-selection: #e8c879;
+  --scent-selection-text: #123a43;
+  --scent-hover: rgb(237 227 214 / 10%);
+}
+[data-scent-theme="ardor"] {
+  --scent-canvas: #0f0d0c;
+  --scent-surface: #2a211c;
+  --scent-surface-soft: rgb(90 47 36 / 42%);
+  --scent-text: #c9a88c;
+  --scent-text-muted: #c9a88c;
+  --scent-display: #c87a38;
+  --scent-accent: #c87a38;
+  --scent-micro-accent: #8a5a34;
+  --scent-border: rgb(201 168 140 / 62%);
+  --scent-divider: rgb(200 122 56 / 38%);
+  --scent-cta: #c9a88c;
+  --scent-cta-text: #0f0d0c;
+  --scent-focus: #f3d6bd;
+  --scent-selection: #c87a38;
+  --scent-selection-text: #0f0d0c;
+  --scent-hover: rgb(201 168 140 / 10%);
+}
+[data-scent-theme="ashoka"] {
+  --scent-canvas: #241621;
+  --scent-surface: #3b1f33;
+  --scent-surface-soft: rgb(107 85 112 / 34%);
+  --scent-text: #efe4d6;
+  --scent-text-muted: #efe4d6;
+  --scent-display: #c2a97a;
+  --scent-accent: #c2a97a;
+  --scent-micro-accent: #8e7d70;
+  --scent-border: rgb(239 228 214 / 62%);
+  --scent-divider: rgb(194 169 122 / 38%);
+  --scent-cta: #efe4d6;
+  --scent-cta-text: #241621;
+  --scent-focus: #efe4d6;
+  --scent-selection: #c2a97a;
+  --scent-selection-text: #241621;
+  --scent-hover: rgb(239 228 214 / 10%);
+}
+[data-scent-theme="theon"] {
+  --scent-canvas: #f7f3eb;
+  --scent-surface: #e9e2d4;
+  --scent-surface-soft: rgb(202 158 91 / 18%);
+  --scent-text: #0a0a0a;
+  --scent-text-muted: #0a0a0a;
+  --scent-display: #8a6a4f;
+  --scent-accent: #c88e4d;
+  --scent-micro-accent: #ca9e5b;
+  --scent-border: rgb(10 10 10 / 48%);
+  --scent-divider: rgb(138 106 79 / 34%);
+  --scent-cta: #0a0a0a;
+  --scent-cta-text: #f7f3eb;
+  --scent-focus: #8a6a4f;
+  --scent-selection: #ca9e5b;
+  --scent-selection-text: #0a0a0a;
+  --scent-hover: rgb(10 10 10 / 6%);
+}
+[data-scent-theme] {
+  color: var(--scent-text);
+  background: var(--scent-canvas);
+}
+[data-scent-theme] ::selection {
+  color: var(--scent-selection-text);
+  background: var(--scent-selection);
+}
+[data-scent-theme] .scent-copy,
+[data-scent-theme] .scent-label {
+  color: var(--scent-text-muted);
+}
+[data-scent-theme] .scent-heading {
+  color: var(--scent-text);
+}
+[data-scent-theme] .scent-display,
+[data-scent-theme] .scent-wordmark {
+  color: var(--scent-display);
+}
+[data-scent-theme] .scent-wordmark {
+  text-decoration: underline;
+  text-decoration-color: var(--scent-accent);
+  text-underline-offset: 0.14em;
+  text-decoration-thickness: 1px;
+}
+[data-scent-theme] .scent-border {
+  border-color: var(--scent-border);
+}
+[data-scent-theme] .scent-dividers > :not(:last-child) {
+  border-color: var(--scent-divider);
+}
+[data-scent-theme] .scent-description {
+  background: var(--scent-surface-soft);
+  border-top: 3px solid var(--scent-micro-accent);
+}
+[data-scent-theme] .scent-panel {
+  background: var(--scent-surface);
+  color: var(--scent-text);
+  border-color: var(--scent-border);
+}
+[data-scent-theme="kameira"] .scent-panel,
+[data-scent-theme="zephyr"] .scent-panel {
+  /* Controlled ivory reading areas interrupt the dominant wine ground. */
+  --scent-text: #4a1828;
+  --scent-text-muted: #4a1828;
+  --scent-surface: #f7f3eb;
+  --scent-border: #4a1828;
+  --scent-divider: rgb(74 24 40 / 25%);
+  --scent-cta: #4a1828;
+  --scent-cta-text: #f7f3eb;
+  --scent-focus: #4a1828;
+  --scent-hover: rgb(74 24 40 / 8%);
+}
+[data-scent-theme="maris"] .scent-panel {
+  --scent-text: #063c41;
+  --scent-text-muted: #063c41;
+  --scent-surface: #dce2e1;
+  --scent-border: #063c41;
+  --scent-divider: rgb(6 60 65 / 24%);
+  --scent-cta: #063c41;
+  --scent-cta-text: #f7ffff;
+  --scent-focus: #063c41;
+  --scent-hover: rgb(6 60 65 / 8%);
+}
+[data-scent-theme="eliora"] .scent-panel {
+  --scent-text: #123a43;
+  --scent-text-muted: #123a43;
+  --scent-surface: #ede3d6;
+  --scent-border: #123a43;
+  --scent-divider: rgb(18 58 67 / 24%);
+  --scent-cta: #123a43;
+  --scent-cta-text: #f7ffff;
+  --scent-focus: #123a43;
+  --scent-hover: rgb(18 58 67 / 8%);
+}
+[data-scent-theme="ardor"] .scent-panel {
+  --scent-text: #0f0d0c;
+  --scent-text-muted: #0f0d0c;
+  --scent-surface: #c9a88c;
+  --scent-border: #0f0d0c;
+  --scent-divider: rgb(15 13 12 / 24%);
+  --scent-cta: #0f0d0c;
+  --scent-cta-text: #f3d6bd;
+  --scent-focus: #0f0d0c;
+  --scent-hover: rgb(15 13 12 / 8%);
+}
+[data-scent-theme="ashoka"] .scent-panel {
+  --scent-text: #241621;
+  --scent-text-muted: #241621;
+  --scent-surface: #efe4d6;
+  --scent-border: #241621;
+  --scent-divider: rgb(36 22 33 / 24%);
+  --scent-cta: #241621;
+  --scent-cta-text: #efe4d6;
+  --scent-focus: #241621;
+  --scent-hover: rgb(36 22 33 / 8%);
+}
+[data-scent-theme="theon"] .scent-panel {
+  --scent-text: #f7f3eb;
+  --scent-text-muted: #f7f3eb;
+  --scent-surface: #0a0a0a;
+  --scent-border: #ca9e5b;
+  --scent-divider: rgb(202 158 91 / 34%);
+  --scent-cta: #f7f3eb;
+  --scent-cta-text: #0a0a0a;
+  --scent-focus: #ca9e5b;
+  --scent-hover: rgb(247 243 235 / 10%);
+}
+[data-scent-theme="zephyr"] .scent-panel {
+  --scent-text: #18365a;
+  --scent-text-muted: #18365a;
+  --scent-surface: #e8e7e1;
+  --scent-border: #18365a;
+  --scent-divider: rgb(24 54 90 / 25%);
+  --scent-cta: #18365a;
+  --scent-cta-text: #e8e7e1;
+  --scent-focus: #18365a;
+  --scent-hover: rgb(24 54 90 / 8%);
+}
+[data-scent-theme] .scent-tag {
+  color: var(--scent-text);
+  background: var(--scent-surface-soft);
+  border-color: var(--scent-divider);
+}
+[data-scent-theme="kameira"] .scent-tag:first-child,
+[data-scent-theme="zephyr"] .scent-tag:first-child,
+[data-scent-theme="maris"] .scent-tag:first-child,
+[data-scent-theme="eliora"] .scent-tag:first-child,
+[data-scent-theme="ardor"] .scent-tag:first-child,
+[data-scent-theme="ashoka"] .scent-tag:first-child,
+[data-scent-theme="theon"] .scent-tag:first-child {
+  box-shadow: inset 3px 0 var(--scent-micro-accent);
+}
+[data-scent-theme] .scent-editorial {
+  color: var(--scent-text);
+  background: var(--scent-surface);
+}
+[data-scent-theme] .scent-gallery-surface {
+  background: var(--scent-surface);
+  border-color: var(--scent-border);
+}
+[data-scent-theme] .scent-gallery-control {
+  color: var(--scent-text);
+  border-color: var(--scent-border);
+}
+[data-scent-theme] .scent-thumbnail {
+  border-color: transparent;
+}
+[data-scent-theme] .scent-thumbnail[aria-pressed="true"] {
+  border-color: var(--scent-focus);
+  box-shadow: 0 2px var(--scent-accent);
+}
+[data-scent-theme] .scent-button {
+  color: var(--scent-text);
+  border-color: var(--scent-border);
+}
+[data-scent-theme] .scent-button[data-variant="primary"] {
+  background: var(--scent-cta);
+  color: var(--scent-cta-text);
+  border-color: var(--scent-cta);
+}
+[data-scent-theme] .scent-button[data-variant="primary"]:hover {
+  background: var(--scent-cta);
+  color: var(--scent-cta-text);
+  box-shadow: 0 0 0 2px var(--scent-accent);
+}
+[data-scent-theme] .scent-button:not([data-variant="primary"]):hover,
+[data-scent-theme] .scent-gallery-control:hover {
+  background: var(--scent-hover);
+  color: var(--scent-text);
+  border-color: var(--scent-focus);
+}
+[data-scent-theme] .scent-button:active,
+[data-scent-theme] .scent-gallery-control:active {
+  box-shadow: inset 0 0 0 2px var(--scent-focus);
+}
+[data-scent-theme] :is(button:disabled, [aria-disabled="true"]) {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+[data-scent-theme] :focus-visible {
+  outline: 3px solid var(--scent-focus);
+  outline-offset: 4px;
+}
+[data-scent-theme] a.scent-label:hover {
+  color: var(--scent-text);
+  border-color: var(--scent-focus);
 }

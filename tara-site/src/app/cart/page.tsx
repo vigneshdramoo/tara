@@ -14,6 +14,10 @@ export const metadata: Metadata = buildPageMetadata({
     path: "/editorial/tara-ashoka-ardor-launch-optimized.webp",
     alt: "TARA fragrance bottles styled for cart and checkout.",
   },
+  robots: {
+    index: false,
+    follow: false,
+  },
 });
 
 export default function CartPage() {

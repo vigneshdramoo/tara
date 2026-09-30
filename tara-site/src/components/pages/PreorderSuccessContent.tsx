@@ -89,7 +89,7 @@ export function PreorderSuccessContent() {
                 </div>
                 <div className="flex flex-col justify-center">
                   <p className="text-xs uppercase tracking-[0.24em] text-black/42">
-                    {scent.audience} / {scent.launch}
+                    {scent.profile.audienceLabel} / {scent.launch}
                   </p>
                   <h2 className="mt-3 font-editorial text-4xl leading-none">
                     {scent.name}

@@ -5,9 +5,15 @@ import { useSearchParams } from "next/navigation";
 
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
+import { discoverySetSlug, type DiscoveryConfiguration } from "@/lib/discovery";
 import { brand } from "@/content/brand";
 import { analyticsEvents, trackEvent } from "@/lib/analytics";
-import { cartStorageKey, notifyCartChange } from "@/lib/cart";
+import {
+  cartStorageKey,
+  notifyCartChange,
+  cartLineKey,
+  type CartItem,
+} from "@/lib/cart";
 import {
   formatRinggitFromSen,
   mapToyyibStatus,
@@ -21,6 +27,16 @@ type PaymentVerification = {
   invoiceNo?: string;
   billCode?: string;
   orderId?: string;
+  items?: Array<{
+    slug: string;
+    name: string;
+    quantity: number;
+    priceInSen: number;
+    configuration?: DiscoveryConfiguration & {
+      scentNames: string[];
+      selectionLabel: string;
+    };
+  }>;
 };
 
 const statusCopy: Record<
@@ -51,9 +67,12 @@ const statusCopy: Record<
 
 export function PaymentResultContent() {
   const searchParams = useSearchParams();
+  const clearedBill = useRef<string | null>(null);
   const hasTrackedView = useRef(false);
   const hasTrackedPaymentSuccess = useRef(false);
-  const [verification, setVerification] = useState<PaymentVerification | null>(null);
+  const [verification, setVerification] = useState<PaymentVerification | null>(
+    null,
+  );
   const [isLoading, setIsLoading] = useState(false);
 
   const billCode = searchParams.get("billcode");
@@ -61,8 +80,11 @@ export function PaymentResultContent() {
   const statusId = searchParams.get("status_id");
   const fallbackStatus = useMemo(() => mapToyyibStatus(statusId), [statusId]);
   const trackedStatus =
-    verification?.status ?? (billCode && isLoading ? undefined : fallbackStatus);
-  const status = verification?.status ?? fallbackStatus;
+    verification?.status ??
+    (billCode && isLoading ? undefined : fallbackStatus);
+  const status =
+    verification?.status ??
+    (fallbackStatus === "success" ? "unknown" : fallbackStatus);
   const copy = statusCopy[status];
 
   useEffect(() => {
@@ -78,6 +100,18 @@ export function PaymentResultContent() {
         setIsLoading(true);
         const response = await fetch(
           `/.netlify/functions/get-toyyibpay-bill-status?billcode=${encodeURIComponent(currentBillCode)}`,
+          {
+            headers: (() => {
+              try {
+                const token = window.localStorage.getItem(
+                  `tara-receipt-${currentBillCode}`,
+                );
+                return token ? { "X-Tara-Receipt": token } : {};
+              } catch {
+                return {};
+              }
+            })() as Record<string, string>,
+          },
         );
 
         if (!response.ok) {
@@ -127,9 +161,47 @@ export function PaymentResultContent() {
       return;
     }
 
-    window.localStorage.removeItem(cartStorageKey);
-    notifyCartChange([]);
-  }, [status]);
+    if (clearedBill.current === billCode) return;
+    try {
+      const marker = `tara-paid-cart-${billCode}`;
+      if (window.localStorage.getItem(marker)) {
+        clearedBill.current = billCode;
+        return;
+      }
+      const saved = JSON.parse(
+        window.localStorage.getItem(cartStorageKey) ?? "[]",
+      ) as CartItem[];
+      if (!Array.isArray(saved)) return;
+      if (
+        saved.some((item) => item.slug === discoverySetSlug) &&
+        !verification?.items
+      )
+        return;
+      if (verification?.items) {
+        const paid = new Map(
+          verification.items.map((item) => [cartLineKey(item), item.quantity]),
+        );
+        const remaining = saved.flatMap((item) => {
+          const quantity = item.quantity - (paid.get(cartLineKey(item)) ?? 0);
+          return quantity > 0 ? [{ ...item, quantity }] : [];
+        });
+        if (remaining.length)
+          window.localStorage.setItem(
+            cartStorageKey,
+            JSON.stringify(remaining),
+          );
+        else window.localStorage.removeItem(cartStorageKey);
+        notifyCartChange(remaining);
+      } else {
+        window.localStorage.removeItem(cartStorageKey);
+        notifyCartChange([]);
+      }
+      window.localStorage.setItem(marker, "1");
+      clearedBill.current = billCode;
+    } catch {
+      /* Receipt remains visible when device storage is unavailable. */
+    }
+  }, [status, billCode, verification]);
 
   useEffect(() => {
     if (status !== "success" || hasTrackedPaymentSuccess.current) {
@@ -192,6 +264,29 @@ export function PaymentResultContent() {
               ) : null}
             </div>
 
+            {verification?.items && (
+              <section className="mt-6" aria-label="Your order">
+                <h2 className="text-xl font-medium">Your order</h2>
+                {verification.items.map((item, index) => (
+                  <article
+                    key={`${item.slug}-${index}`}
+                    className="border-b border-black/15 py-4"
+                  >
+                    <h3 className="font-semibold">
+                      {item.name} × {item.quantity}
+                    </h3>
+                    {item.configuration && (
+                      <p className="mt-2 text-sm leading-7">
+                        {item.configuration.selectionLabel}
+                      </p>
+                    )}
+                    <p className="mt-2 text-sm">
+                      {formatRinggitFromSen(item.priceInSen * item.quantity)}
+                    </p>
+                  </article>
+                ))}
+              </section>
+            )}
             <div className="mt-6 grid gap-4">
               <div className="border-y border-black/12 py-5">
                 <p className="text-xs uppercase tracking-[0.22em] text-black/42">
@@ -214,8 +309,14 @@ export function PaymentResultContent() {
               ) : null}
 
               {[
-                { label: "Order Reference", value: verification?.orderId ?? orderId ?? undefined },
-                { label: "Bill Code", value: verification?.billCode ?? billCode ?? undefined },
+                {
+                  label: "Order Reference",
+                  value: verification?.orderId ?? orderId ?? undefined,
+                },
+                {
+                  label: "Bill Code",
+                  value: verification?.billCode ?? billCode ?? undefined,
+                },
                 { label: "Payment Channel", value: verification?.channel },
                 { label: "Invoice", value: verification?.invoiceNo },
               ]

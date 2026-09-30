@@ -52,6 +52,10 @@ export const metadata: Metadata = {
   title: "TARA Scent Trail Links",
   description:
     "TARA QR links for completed Scent Trail stops, Instagram updates, Eliora, and the discovery set.",
+  robots: {
+    index: false,
+    follow: true,
+  },
   alternates: {
     canonical: linkPageUrl,
   },

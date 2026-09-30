@@ -3,6 +3,8 @@
 import type { AnchorHTMLAttributes, ReactNode } from "react";
 
 import {
+  type AnalyticsEventName,
+  analyticsEvents,
   isWhatsAppUrl,
   trackCtaClick,
   trackWhatsAppClick,
@@ -12,6 +14,7 @@ type TrackedAnchorProps = AnchorHTMLAttributes<HTMLAnchorElement> & {
   href: string;
   trackingLabel?: string;
   trackingLocation?: string;
+  trackingEventName?: AnalyticsEventName;
   children: ReactNode;
 };
 
@@ -19,14 +22,21 @@ export function TrackedAnchor({
   href,
   trackingLabel,
   trackingLocation,
+  trackingEventName,
   onClick,
   children,
   ...props
 }: TrackedAnchorProps) {
   function handleClick(event: React.MouseEvent<HTMLAnchorElement>) {
     const isWhatsAppHref = isWhatsAppUrl(href);
+    const inferredEventName =
+      trackingEventName ??
+      (href.includes("three-8ml-promo")
+        ? analyticsEvents.discoverySetClick
+        : undefined);
 
     trackCtaClick({
+      eventName: inferredEventName,
       linkLabel: trackingLabel,
       linkLocation: trackingLocation ?? "tracked_anchor",
       linkUrl: href,

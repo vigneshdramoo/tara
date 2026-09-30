@@ -46,7 +46,7 @@ export const popupCampaign = {
       "A golden floral-musk hidden in twilight, unfolding through soft spice, creamy white florals, clean musk, and amber skin warmth.",
     details: [
       "Available now",
-      "For Her",
+      "Golden floral-musk profile",
       "50mL Eau de Parfum",
       "Part of the 8mL promo",
       "Online preorder open",

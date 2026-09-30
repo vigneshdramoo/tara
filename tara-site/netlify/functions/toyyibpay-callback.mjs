@@ -1,3 +1,5 @@
+import { getDiscoveryOrder } from "./lib/discovery-orders.mjs";
+import { checkoutItemSummary } from "./lib/checkout-catalog.mjs";
 import crypto from "node:crypto";
 
 import { sendOrderNotification } from "./lib/order-email.mjs";
@@ -22,11 +24,7 @@ function getBodyParams(event) {
 }
 
 function getParam(event, bodyParams, name) {
-  return (
-    bodyParams.get(name) ??
-    event.queryStringParameters?.[name] ??
-    ""
-  );
+  return bodyParams.get(name) ?? event.queryStringParameters?.[name] ?? "";
 }
 
 function buildAuditNotes({
@@ -59,6 +57,7 @@ async function recordCallbackEvent(event, details) {
     eventLabel: details.eventLabel,
     orderReference: details.orderReference,
     itemSummary: details.itemSummary,
+    orderItems: details.orderItems,
     customerName: "-",
     customerEmail: "-",
     customerPhone: "-",
@@ -236,15 +235,17 @@ export async function handler(event) {
     transactionId,
   });
 
+  const storedOrder = await getDiscoveryOrder(event, orderId).catch(() => null);
   await recordCallbackEvent(event, {
     subject: `TARA payment callback: ${orderId || "unknown order"}`,
     eventLabel: "Payment Callback",
     orderReference: orderId,
-    itemSummary: `ToyyibPay callback status: ${status}`,
+    itemSummary: storedOrder
+      ? checkoutItemSummary(storedOrder.items)
+      : `ToyyibPay callback status: ${status}`,
+    orderItems: storedOrder ? JSON.stringify(storedOrder.items) : undefined,
     amount,
-    paymentStatus: `Status ${status}${
-      reason ? ` / ${reason}` : ""
-    }`,
+    paymentStatus: `Status ${status}${reason ? ` / ${reason}` : ""}`,
     billCode,
     notes: buildAuditNotes({
       method,

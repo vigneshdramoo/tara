@@ -40,6 +40,7 @@ export function StickyMobileCta({ primary, secondary }: StickyMobileCtaProps) {
           isVisible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0",
         )}
         aria-hidden={!isVisible}
+        inert={!isVisible}
       >
         <div
           className={cn(
@@ -51,7 +52,7 @@ export function StickyMobileCta({ primary, secondary }: StickyMobileCtaProps) {
             href={primary.href}
             variant={primary.variant}
             size="sm"
-            className="w-full"
+            className="w-full !text-[10px] !tracking-normal"
             trackingLocation="sticky_mobile_cta"
           >
             {primary.label}
@@ -60,7 +61,7 @@ export function StickyMobileCta({ primary, secondary }: StickyMobileCtaProps) {
             href={secondary.href}
             variant={secondary.variant}
             size="sm"
-            className="w-full"
+            className="w-full !text-[10px] !tracking-normal"
             trackingLocation="sticky_mobile_cta"
           >
             {secondary.label}

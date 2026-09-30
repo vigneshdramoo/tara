@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { ScentDetailPage } from "@/components/pages/ScentDetailPage";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { brand } from "@/content/brand";
 import { scents } from "@/content/scents";
 import { getScentBySlug } from "@/lib/catalog";
+import { buildBreadcrumbJsonLd, buildProductJsonLd } from "@/lib/structured-data";
 import { absoluteUrl } from "@/lib/utils";
 
 type PageProps = {
@@ -32,7 +34,9 @@ export async function generateMetadata({
   }
 
   const pageUrl = absoluteUrl(`/scents/${scent.slug}`);
-  const socialImage = {
+  const socialImage = scent.editorial ? {
+    url: absoluteUrl(scent.editorial.src), width: scent.editorial.width, height: scent.editorial.height, alt: scent.editorial.alt,
+  } : {
     url: absoluteUrl(`/og/tara-${scent.slug}.jpg`),
     width: 1200,
     height: 630,
@@ -41,14 +45,14 @@ export async function generateMetadata({
   const socialTitle = `${scent.name} - ${scent.tagline}`;
 
   return {
-    title: `${scent.name} - Luxury Perfume`,
-    description: scent.summary,
+    title: scent.seo ? { absolute: scent.seo.title } : `${scent.name} - Luxury Perfume`,
+    description: scent.seo?.description ?? scent.summary,
     alternates: {
       canonical: pageUrl,
     },
     openGraph: {
       title: socialTitle,
-      description: scent.summary,
+      description: scent.seo?.description ?? scent.summary,
       url: pageUrl,
       siteName: brand.name,
       images: [socialImage],
@@ -58,7 +62,7 @@ export async function generateMetadata({
     twitter: {
       card: "summary_large_image",
       title: socialTitle,
-      description: scent.summary,
+      description: scent.seo?.description ?? scent.summary,
       images: [socialImage],
     },
   };
@@ -72,5 +76,19 @@ export default async function ScentPage({ params }: PageProps) {
     notFound();
   }
 
-  return <ScentDetailPage scent={scent} />;
+  return (
+    <>
+      <JsonLd
+        data={[
+          buildProductJsonLd(scent),
+          buildBreadcrumbJsonLd([
+            { name: "Home", href: "/" },
+            { name: "Scents", href: "/scents" },
+            { name: scent.name, href: `/scents/${scent.slug}` },
+          ]),
+        ]}
+      />
+      <ScentDetailPage scent={scent} />
+    </>
+  );
 }

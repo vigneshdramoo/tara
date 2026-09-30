@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { QuickAddButton } from "@/components/cart/QuickAddButton";
 import { Button } from "@/components/ui/Button";
@@ -76,6 +76,7 @@ function scoreAnswers(answers: Partial<Record<QuestionId, QuizOption>>) {
 }
 
 export function SignatureScentMiniQuiz({ scents }: SignatureScentMiniQuizProps) {
+  const hasTrackedResult = useRef(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<Partial<Record<QuestionId, QuizOption>>>({});
   const [hasStarted, setHasStarted] = useState(false);
@@ -93,10 +94,11 @@ export function SignatureScentMiniQuiz({ scents }: SignatureScentMiniQuizProps) 
   }, [answers, scents]);
 
   useEffect(() => {
-    if (!isComplete || !result) {
+    if (!isComplete || !result || hasTrackedResult.current) {
       return;
     }
 
+    hasTrackedResult.current = true;
     trackEvent(analyticsEvents.quizComplete, {
       event_category: "engagement",
       quiz_name: "homepage_signature_scent",
@@ -104,6 +106,11 @@ export function SignatureScentMiniQuiz({ scents }: SignatureScentMiniQuizProps) 
       answer_occasion: answers.occasion?.value,
       answer_vibe: answers.vibe?.value,
       answer_family: answers.family?.value,
+    });
+    trackEvent(analyticsEvents.quizResultRevealed, {
+      event_category: "engagement",
+      quiz_name: "homepage_signature_scent",
+      selected_scent: result.slug,
     });
   }, [answers, isComplete, result]);
 
@@ -127,6 +134,7 @@ export function SignatureScentMiniQuiz({ scents }: SignatureScentMiniQuizProps) 
   }
 
   function resetQuiz() {
+    hasTrackedResult.current = false;
     setAnswers({});
     setCurrentStep(0);
     setHasStarted(false);
@@ -180,16 +188,19 @@ export function SignatureScentMiniQuiz({ scents }: SignatureScentMiniQuizProps) 
               {result.tagline}. {result.summary}
             </p>
             <div className="mt-6 flex flex-wrap gap-2">
-              {[result.audience, result.launchPrice ?? result.price, result.mood[0]].map(
-                (badge) =>
-                  badge ? (
-                    <span
-                      key={badge}
-                      className="rounded-full border border-black/10 bg-[rgba(247,243,235,0.72)] px-3 py-2 text-[10px] uppercase tracking-[0.18em] text-black/58"
-                    >
-                      {badge}
-                    </span>
-                  ) : null,
+              {[
+                result.profile.audienceLabel,
+                result.launchPrice ?? result.price,
+                result.mood[0],
+              ].map((badge) =>
+                badge ? (
+                  <span
+                    key={badge}
+                    className="rounded-full border border-black/10 bg-[rgba(247,243,235,0.72)] px-3 py-2 text-[10px] uppercase tracking-[0.18em] text-black/58"
+                  >
+                    {badge}
+                  </span>
+                ) : null,
               )}
             </div>
             <div className="mt-7 grid gap-3 sm:flex sm:flex-wrap">
@@ -203,6 +214,7 @@ export function SignatureScentMiniQuiz({ scents }: SignatureScentMiniQuizProps) 
                 variant="secondary"
                 size="sm"
                 trackingLocation="homepage_signature_quiz_result"
+                trackingEventName={analyticsEvents.quizResultProductClick}
                 trackingParams={{ selected_scent: result.slug }}
               >
                 Explore {result.name}

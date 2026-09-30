@@ -4,6 +4,8 @@ import Link from "next/link";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 import {
+  type AnalyticsEventName,
+  analyticsEvents,
   isWhatsAppUrl,
   trackCtaClick,
   trackWhatsAppClick,
@@ -18,6 +20,7 @@ type ButtonProps = {
   className?: string;
   trackingLabel?: string;
   trackingLocation?: string;
+  trackingEventName?: AnalyticsEventName;
   trackingParams?: Record<string, AnalyticsValue>;
   target?: string;
   rel?: string;
@@ -31,6 +34,7 @@ export function Button({
   className,
   trackingLabel,
   trackingLocation,
+  trackingEventName,
   trackingParams,
   target,
   rel,
@@ -39,8 +43,10 @@ export function Button({
   ...props
 }: ButtonProps) {
   const classes = cn(
-    "inline-flex w-full items-center justify-center rounded-full border text-center text-[11px] font-semibold uppercase tracking-[0.16em] transition duration-300 sm:w-auto sm:text-xs sm:tracking-[0.22em]",
-    size === "md" ? "min-h-11 px-5 py-3 sm:min-h-12 sm:px-6" : "min-h-10 px-3.5 py-2.5 sm:px-4",
+    "scent-button inline-flex w-full items-center justify-center rounded-full border text-center text-[11px] font-semibold uppercase tracking-[0.16em] transition duration-300 sm:w-auto sm:text-xs sm:tracking-[0.22em]",
+    size === "md"
+      ? "min-h-11 px-5 py-3 sm:min-h-12 sm:px-6"
+      : "min-h-10 px-3.5 py-2.5 sm:px-4",
     variant === "primary" &&
       "border-[var(--color-gold)] bg-[var(--color-gold)] text-[var(--color-onyx-black)] hover:border-[var(--color-amber)] hover:bg-[var(--color-amber)]",
     variant === "secondary" &&
@@ -54,6 +60,11 @@ export function Button({
     const linkHref = href;
     const isExternalHref = linkHref.startsWith("http");
     const isWhatsAppHref = isWhatsAppUrl(linkHref);
+    const inferredEventName =
+      trackingEventName ??
+      (linkHref.includes("three-8ml-promo")
+        ? analyticsEvents.discoverySetClick
+        : undefined);
     const label =
       trackingLabel ?? (typeof children === "string" ? children : undefined);
     const linkTarget = target ?? (isExternalHref ? "_blank" : undefined);
@@ -61,10 +72,15 @@ export function Button({
 
     function handleLinkClick() {
       trackCtaClick({
+        eventName: inferredEventName,
         linkLabel: label,
         linkLocation: trackingLocation ?? "button",
         linkUrl: linkHref,
-        linkType: isWhatsAppHref ? "whatsapp" : isExternalHref ? "external" : "internal",
+        linkType: isWhatsAppHref
+          ? "whatsapp"
+          : isExternalHref
+            ? "external"
+            : "internal",
         ...trackingParams,
       });
 
@@ -83,6 +99,7 @@ export function Button({
       return (
         <a
           href={linkHref}
+          data-variant={variant}
           className={classes}
           target={linkTarget}
           rel={linkRel}
@@ -94,14 +111,19 @@ export function Button({
     }
 
     return (
-      <Link href={linkHref} className={classes} onClick={handleLinkClick}>
+      <Link
+        href={linkHref}
+        data-variant={variant}
+        className={classes}
+        onClick={handleLinkClick}
+      >
         {children}
       </Link>
     );
   }
 
   return (
-    <button type={type} className={classes} {...props}>
+    <button type={type} data-variant={variant} className={classes} {...props}>
       {children}
     </button>
   );

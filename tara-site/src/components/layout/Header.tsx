@@ -2,26 +2,43 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
+import { commercialOffers } from "@/content/commercial";
 import { brand } from "@/content/brand";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { SocialLinks } from "@/components/ui/SocialLinks";
 import { SiteIcon } from "@/components/ui/SiteIcon";
 import { cartStorageKey, getCartItemCount } from "@/lib/cart";
-import { cn } from "@/lib/utils";
-import { trackCtaClick, trackWhatsAppClick } from "@/lib/analytics";
+
+import { trackCtaClick } from "@/lib/analytics";
 
 export function Header() {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
 
   useEffect(() => {
-    document.body.style.overflow = menuOpen ? "hidden" : "";
-
+    const dialog = dialogRef.current;
+    if (menuOpen) dialog?.showModal();
+    else if (dialog?.open) {
+      dialog.close();
+      triggerRef.current?.focus();
+    }
+    document.body.toggleAttribute("data-menu-open", menuOpen);
+    const previousOverflow = document.body.style.overflow;
+    if (menuOpen) document.body.style.overflow = "hidden";
+    const desktop = window.matchMedia("(min-width: 1280px)");
+    const onResize = () => {
+      if (desktop.matches) setMenuOpen(false);
+    };
+    desktop.addEventListener("change", onResize);
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow = previousOverflow;
+      document.body.removeAttribute("data-menu-open");
+      desktop.removeEventListener("change", onResize);
     };
   }, [menuOpen]);
 
@@ -39,7 +56,8 @@ export function Header() {
     }
 
     function handleCartEvent(event: Event) {
-      const itemCount = (event as CustomEvent<{ itemCount?: number }>).detail?.itemCount;
+      const itemCount = (event as CustomEvent<{ itemCount?: number }>).detail
+        ?.itemCount;
 
       if (typeof itemCount === "number") {
         setCartCount(itemCount);
@@ -61,7 +79,14 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-black/10 bg-[rgba(247,243,235,0.86)] backdrop-blur-xl">
-      <Container className="flex items-center justify-between gap-2 py-4 sm:gap-4 sm:py-5">
+      <Link
+        href={brand.home.eightMlPromo.primary.href}
+        className="block bg-[#211e19] px-4 py-2 text-center text-[10px] leading-5 text-[#f7f3eb] sm:text-xs"
+      >
+        THEON + KAMEIRA · Latest launches · Try 3 samples for{" "}
+        {commercialOffers.discoverySet.price}
+      </Link>
+      <Container className="flex items-center justify-between gap-2 py-3 sm:gap-4 sm:py-4">
         <Link href="/" className="group flex min-w-0 items-center">
           <Image
             src="/logos/tara-wordmark.png"
@@ -69,7 +94,7 @@ export function Header() {
             width={2400}
             height={656}
             priority
-            className="h-auto w-[146px] object-contain transition duration-300 group-hover:opacity-80 sm:w-[212px] xl:w-[220px]"
+            className="h-auto w-[100px] object-contain transition duration-300 group-hover:opacity-80 sm:w-[212px] xl:w-[220px]"
           />
         </Link>
 
@@ -118,22 +143,12 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-2 xl:hidden">
-          <a
-            href={brand.whatsappUrl}
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Open WhatsApp Concierge"
-            onClick={() =>
-              trackWhatsAppClick({
-                linkLabel: "Open WhatsApp Concierge",
-                linkLocation: "mobile_header",
-                linkUrl: brand.whatsappUrl,
-              })
-            }
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-black/12 bg-transparent text-[var(--color-gold)]"
+          <Link
+            href="/preorder"
+            className="flex min-h-11 items-center rounded-full bg-[var(--color-gold)] px-3 text-[10px] font-semibold uppercase"
           >
-            <SiteIcon name="whatsapp" />
-          </a>
+            Preorder
+          </Link>
           <Link
             href="/cart"
             aria-label="View cart"
@@ -159,6 +174,7 @@ export function Header() {
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             aria-expanded={menuOpen}
             aria-controls="mobile-menu"
+            ref={triggerRef}
             onClick={() => setMenuOpen((current) => !current)}
             className="flex h-10 w-10 items-center justify-center rounded-full border border-black/12 bg-transparent text-[var(--color-onyx-black)]"
           >
@@ -167,13 +183,45 @@ export function Header() {
         </div>
       </Container>
 
-      <div
+      <dialog
+        ref={dialogRef}
         id="mobile-menu"
-        className={cn(
-          "fixed inset-x-0 top-[73px] z-40 h-[calc(100svh-73px)] origin-top overflow-y-auto border-b border-black/10 bg-[var(--color-ivory)] px-4 pb-8 pt-4 shadow-[0_24px_80px_rgba(10,10,10,0.10)] transition duration-300 sm:top-[83px] sm:h-[calc(100svh-83px)] sm:px-6 sm:pb-10 sm:pt-6 xl:hidden",
-          menuOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0",
-        )}
+        aria-label="Main menu"
+        onKeyDown={(event) => {
+          if (event.key !== "Tab") return;
+          const controls = Array.from(
+            event.currentTarget.querySelectorAll<HTMLElement>(
+              'a[href], button:not([disabled]), [tabindex="0"]',
+            ),
+          );
+          const first = controls[0];
+          const last = controls.at(-1);
+          if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last?.focus();
+          } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first?.focus();
+          }
+        }}
+        onCancel={() => setMenuOpen(false)}
+        onClose={() => setMenuOpen(false)}
+        onClick={(event) => {
+          if ((event.target as HTMLElement).closest("a")) setMenuOpen(false);
+        }}
+        className="fixed inset-0 m-0 h-dvh max-h-none w-full max-w-none overflow-y-auto bg-[var(--color-ivory)] p-6 text-[var(--color-onyx-black)] backdrop:bg-black/40"
       >
+        <div className="mb-6 flex items-center justify-between">
+          <p className="text-xl font-medium">TARA</p>
+          <button
+            type="button"
+            onClick={() => setMenuOpen(false)}
+            aria-label="Close menu"
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-black/20"
+          >
+            <SiteIcon name="close" />
+          </button>
+        </div>
         <Container className="px-0">
           <nav className="grid gap-3">
             {brand.navigation.map((item) => (
@@ -197,9 +245,13 @@ export function Header() {
               Preorder
             </Button>
           </div>
-          <SocialLinks links={brand.socialLinks} variant="inline" className="mt-5" />
+          <SocialLinks
+            links={brand.socialLinks}
+            variant="inline"
+            className="mt-5"
+          />
         </Container>
-      </div>
+      </dialog>
     </header>
   );
 }

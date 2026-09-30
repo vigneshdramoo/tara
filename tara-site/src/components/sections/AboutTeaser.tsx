@@ -38,9 +38,12 @@ export function AboutTeaser({ content }: AboutTeaserProps) {
               <blockquote className="mt-6 border-l-2 border-[var(--color-gold)]/40 pl-4 font-editorial text-2xl italic leading-snug text-[var(--color-onyx-black)] sm:text-3xl">
                 &ldquo;{content.quote}&rdquo;
               </blockquote>
-              <p className="mt-6 text-sm leading-7 text-black/58">
-                {content.paragraphs[0]}
-              </p>
+              <details className="mt-6 text-sm leading-7 text-black/70">
+                <summary className="cursor-pointer py-2">
+                  Meet the full scent family
+                </summary>
+                <p className="mt-3">{content.paragraphs[0]}</p>
+              </details>
             </div>
             <div className="mt-8">
               <Button

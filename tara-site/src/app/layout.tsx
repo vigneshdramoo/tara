@@ -14,8 +14,10 @@ import {
 import { MetricoolTrackerHead } from "@/components/analytics/MetricoolTracker";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { FloatingWhatsAppButton } from "@/components/sections/FloatingWhatsAppButton";
 import { brand } from "@/content/brand";
+import { buildOrganizationJsonLd } from "@/lib/structured-data";
 import { absoluteUrl, siteUrl } from "@/lib/utils";
 
 const sans = Manrope({
@@ -102,6 +104,7 @@ export default function RootLayout({
         <GoogleTagManagerHead />
         <GoogleAnalyticsHead />
         <MetricoolTrackerHead />
+        <JsonLd data={buildOrganizationJsonLd()} />
       </head>
       <body className={`${sans.variable} ${serif.variable} antialiased`}>
         <GoogleTagManagerNoScript />

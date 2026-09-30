@@ -6,11 +6,11 @@ import { Container } from "@/components/ui/Container";
 import { buildPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildPageMetadata({
-  title: "Preorder Request Received",
+  title: "Concierge Request Received",
   description:
-    "Your TARA preorder request has been received. Follow up with the concierge for payment, allocation, and delivery confirmation.",
+    "Your TARA concierge request has been received. Follow up with the house for scent guidance, order confirmation, delivery needs, and payment next steps.",
   path: "/preorder/success",
-  socialTitle: "TARA Preorder Request Received",
+  socialTitle: "TARA Concierge Request Received",
   socialImage: {
     path: "/editorial/tara-preorder-hero-banner-optimized.webp",
     alt: "TARA fragrance bottles prepared for preorder confirmation.",

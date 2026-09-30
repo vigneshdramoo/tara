@@ -1,7 +1,9 @@
 import { PageHero } from "@/components/sections/PageHero";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import type { PolicyPageContent } from "@/content/legal";
+import { buildPolicyBreadcrumbJsonLd } from "@/lib/structured-data";
 
 type PolicyPageProps = {
   page: PolicyPageContent;
@@ -10,6 +12,8 @@ type PolicyPageProps = {
 export function PolicyPage({ page }: PolicyPageProps) {
   return (
     <>
+      <JsonLd data={buildPolicyBreadcrumbJsonLd(page)} />
+
       <PageHero
         eyebrow={page.eyebrow}
         title={page.title}

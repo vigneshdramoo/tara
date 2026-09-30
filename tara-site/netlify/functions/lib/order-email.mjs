@@ -38,6 +38,7 @@ async function submitOrderEventForm(event, parameters) {
     event_label: normalizedParameters.eventLabel,
     order_reference: normalizedParameters.orderReference,
     item_summary: normalizedParameters.itemSummary,
+    order_items: normalizedParameters.orderItems,
     customer_name: normalizedParameters.customerName,
     customer_email: normalizedParameters.customerEmail,
     customer_phone: normalizedParameters.customerPhone,

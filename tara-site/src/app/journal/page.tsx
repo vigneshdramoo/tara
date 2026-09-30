@@ -4,16 +4,19 @@ import Link from "next/link";
 
 import { Container } from "@/components/ui/Container";
 import { journalArticles } from "@/content/journal";
-import { absoluteUrl } from "@/lib/utils";
+import { buildPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: "Journal - Perfume Malaysia Guides",
   description:
     "TARA Journal covers perfume Malaysia guides, humid-climate fragrance wear, scent layering, gifting, and halal-conscious fragrance questions.",
-  alternates: {
-    canonical: absoluteUrl("/journal"),
+  path: "/journal",
+  socialTitle: "TARA Journal - Perfume Malaysia Guides",
+  socialImage: {
+    path: "/editorial/tara-maris-square-optimized.webp",
+    alt: "TARA fragrance styled with coastal minerals for humid-climate fragrance guidance.",
   },
-};
+});
 
 export default function JournalPage() {
   return (

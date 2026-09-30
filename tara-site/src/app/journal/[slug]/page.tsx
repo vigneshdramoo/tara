@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
+import { JsonLd } from "@/components/seo/JsonLd";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { brand } from "@/content/brand";
 import { getJournalArticle, journalArticles } from "@/content/journal";
+import { buildArticleJsonLd, buildBreadcrumbJsonLd } from "@/lib/structured-data";
 import { absoluteUrl } from "@/lib/utils";
 
 type JournalArticlePageProps = {
@@ -53,6 +55,12 @@ export async function generateMetadata({
       locale: "en_MY",
       type: "article",
     },
+    twitter: {
+      card: "summary_large_image",
+      title: `${article.title} | TARA Journal`,
+      description: article.excerpt,
+      images: [absoluteUrl(article.visual.src)],
+    },
   };
 }
 
@@ -66,6 +74,16 @@ export default async function JournalArticlePage({ params }: JournalArticlePageP
 
   return (
     <article className="border-b border-black/10">
+      <JsonLd
+        data={[
+          buildArticleJsonLd(article),
+          buildBreadcrumbJsonLd([
+            { name: "Home", href: "/" },
+            { name: "Journal", href: "/journal" },
+            { name: article.title, href: `/journal/${article.slug}` },
+          ]),
+        ]}
+      />
       <Container className="py-14 sm:py-20">
         <div className="grid gap-10 lg:grid-cols-[0.82fr_0.58fr] lg:items-end">
           <div>

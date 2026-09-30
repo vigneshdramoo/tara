@@ -1,162 +1,175 @@
-import Image from "next/image";
+import { ScentGallery } from "@/components/product/ScentGallery";
+import { ScentImage } from "@/components/product/ScentImage";
 
 import type { Scent } from "@/types/content";
+import { ConciergeCallout } from "@/components/product/ConciergeCallout";
+import { PriceBlock } from "@/components/product/PriceBlock";
+import { ProductProfile } from "@/components/product/ProductProfile";
+import { PurchaseReassurance } from "@/components/product/PurchaseReassurance";
+import { SampleSetCallout } from "@/components/product/SampleSetCallout";
 import { PageHero } from "@/components/sections/PageHero";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
+import { commercialOffers } from "@/content/commercial";
 import {
   buildSecureCheckoutHref,
   canCheckoutScent,
   paymentsEnabled,
 } from "@/lib/payments";
-import { cn } from "@/lib/utils";
 
 type ScentDetailPageProps = {
   scent: Scent;
 };
 
 export function ScentDetailPage({ scent }: ScentDetailPageProps) {
+  const sampleSetHref = `/preorder?checkout=${commercialOffers.discoverySet.slug}#secure-checkout`;
   const heroNote = [
-    scent.audience,
+    scent.profile.audienceLabel,
     scent.line,
     scent.size,
-    scent.price ?? scent.launch,
+    scent.travelPrice
+      ? `50 ml ${scent.price} / 8 ml ${scent.travelPrice}`
+      : (scent.price ?? scent.launch),
   ].join(" / ");
   const primaryCta =
     scent.action?.primary ??
     (paymentsEnabled && canCheckoutScent(scent)
       ? {
-          label: "Pay Securely",
+          label: "Shop 50mL Bottle",
           href: buildSecureCheckoutHref(scent.slug),
           variant: "primary" as const,
         }
       : {
           label:
-            scent.status === "available" ? "Preorder This Scent" : "Join the Waitlist",
+            scent.status === "available"
+              ? "Reserve 50mL Bottle"
+              : "Join the Waitlist",
           href: "/preorder",
           variant: "primary" as const,
         });
-  const secondaryCta =
-    scent.action?.secondary ?? {
-      label: "Explore All Scents",
-      href: "/scents",
-      variant: "secondary" as const,
-    };
+  const secondaryCta = scent.action?.secondary ?? {
+    label: "Try In RM99 Set",
+    href: sampleSetHref,
+    variant: "secondary" as const,
+  };
 
   return (
-    <>
+    <div data-scent-theme={scent.theme}>
       <PageHero
         eyebrow={scent.launch}
         title={scent.name}
+        introduction={
+          scent.primaryHook ? (
+            <div className="mt-6">
+              <p className="text-xs uppercase tracking-[0.24em]">
+                {scent.tagline}
+              </p>
+              <p className="mt-3 text-2xl">{scent.primaryHook}</p>
+            </div>
+          ) : undefined
+        }
         body={scent.summary}
         note={heroNote}
-        visual={scent.visual}
+        visual={scent.interactiveGallery ? undefined : scent.visual}
+        visualContent={
+          scent.interactiveGallery && scent.gallery ? (
+            <ScentGallery scent={scent} />
+          ) : undefined
+        }
         primaryCta={primaryCta}
         secondaryCta={secondaryCta}
       />
 
       <section className="py-16 sm:py-24">
-        <Container className="grid gap-10 xl:grid-cols-[0.46fr_0.54fr] xl:items-start">
-          <div className="xl:sticky xl:top-28">
-            <div className="relative aspect-square overflow-hidden rounded-[1.35rem] border border-black/10 sm:rounded-[1.8rem]">
-              <Image
-                src={scent.visual.src}
-                alt={scent.visual.alt}
-                fill
-                className={cn(
-                  scent.visual.fit === "contain" ? "object-contain" : "object-cover",
-                )}
-                style={
-                  scent.visual.position
-                    ? { objectPosition: scent.visual.position }
-                    : undefined
-                }
-              />
-              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(247,243,235,0.04),rgba(247,243,235,0.34))]" />
-            </div>
-            {scent.gallery?.length ? (
-              <div className="mt-5" aria-label={`${scent.name} image carousel`}>
-                <div className="flex snap-x gap-3 overflow-x-auto pb-3">
-                  {scent.gallery.map((item) => (
-                    <figure
-                      key={item.src}
-                      className="w-[10.25rem] shrink-0 snap-start sm:w-[11.5rem]"
-                    >
-                      <div className="relative aspect-square overflow-hidden rounded-2xl border border-black/10 bg-white/40">
-                        <Image
-                          src={item.src}
-                          alt={item.alt}
-                          fill
-                          sizes="(max-width: 640px) 42vw, 184px"
-                          className={cn(
-                            item.fit === "contain" ? "object-contain" : "object-cover",
-                          )}
-                          style={
-                            item.position
-                              ? { objectPosition: item.position }
-                              : undefined
-                          }
-                          loading="lazy"
-                        />
-                      </div>
-                      <figcaption className="mt-3">
-                        <p className="text-xs uppercase tracking-[0.24em] text-[var(--color-gold)]">
-                          {item.title}
-                        </p>
-                        <p className="mt-1 line-clamp-2 text-xs leading-5 text-black/55">
-                          {item.caption}
-                        </p>
-                      </figcaption>
-                    </figure>
-                  ))}
-                </div>
-              </div>
-            ) : null}
-          </div>
-
+        <Container
+          className={
+            scent.interactiveGallery
+              ? "max-w-[1000px]"
+              : "grid gap-10 xl:grid-cols-[0.46fr_0.54fr] xl:items-start"
+          }
+        >
+          {!scent.interactiveGallery ? <ScentGallery scent={scent} /> : null}
           <div>
-            <div className="border-y border-black/10 py-8">
-              <p className="text-xs uppercase tracking-[0.3em] text-[var(--color-gold)]">
+            <div className="border-y scent-border border-black/10 py-8">
+              <p className="text-xs uppercase tracking-[0.3em] scent-label text-[var(--color-gold)]">
                 Scent Story
               </p>
               <p className="mt-7 max-w-4xl text-[clamp(2.25rem,3.6vw,3.85rem)] font-medium leading-[0.96] tracking-[-0.045em] text-balance">
                 {scent.story}
               </p>
               {scent.storyLead ? (
-                <p className="mt-7 max-w-2xl text-base leading-8 text-[var(--color-copy)] sm:text-lg">
+                <p className="mt-7 max-w-2xl text-base leading-8 scent-copy text-[var(--color-copy)] sm:text-lg">
                   {scent.storyLead}
                 </p>
               ) : null}
             </div>
 
-            <div className="grid border-b border-black/10 sm:grid-cols-3">
-              {[
-                ["Top", scent.notes.top.join(", ")],
-                ["Heart", scent.notes.heart.join(", ")],
-                ["Base", scent.notes.base.join(", ")],
-              ].map(([label, value]) => (
-                <div
-                  key={label}
-                  className="border-t border-black/10 py-5 sm:border-l sm:border-t-0 sm:px-5 sm:first:border-l-0"
-                >
-                  <p className="text-xs uppercase tracking-[0.24em] text-[var(--color-gold)]">
-                    {label}
+            {scent.storySignature ? (
+              <p className="mt-6 text-lg">{scent.storySignature}</p>
+            ) : null}
+            {scent.description ? (
+              <div className="scent-description mt-10 rounded-3xl p-6 sm:p-10">
+                <h2 className="text-3xl">{scent.primaryHook}</h2>
+                <p className="mt-5 text-base leading-8">{scent.description}</p>
+              </div>
+            ) : null}
+            <ProductProfile scent={scent} />
+            <div className="mt-6 grid gap-4">
+              <PriceBlock
+                scent={scent}
+                size={scent.travelPrice ? "50 ml Eau de Parfum" : scent.size}
+              />
+              {scent.travelPrice ? (
+                <div className="flex flex-wrap items-center justify-between gap-4 border-b scent-border border-black/10 py-5">
+                  <p className="text-sm">
+                    8 ml Eau de Parfum / {scent.travelPrice}
                   </p>
-                  <p className="mt-4 text-sm leading-7 text-black/60">{value}</p>
+                  <Button href="/contact" variant="secondary">
+                    Enquire About 8 ml
+                  </Button>
                 </div>
-              ))}
+              ) : null}
             </div>
           </div>
         </Container>
+
+        {scent.editorial ? (
+          <Container className="mt-16 sm:mt-24">
+            <section
+              aria-label={`${scent.name} fragrance story`}
+              className="scent-editorial relative overflow-hidden rounded-[1.35rem]"
+            >
+              <ScentImage
+                asset={scent.editorial}
+                mobileAsset={scent.editorialMobile}
+                sizes="(min-width: 1200px) 1104px, (min-width: 640px) calc(100vw - 64px), calc(100vw - 32px)"
+                className="h-auto w-full object-contain"
+              />
+              <div
+                className={`${scent.editorialMobile ? "absolute inset-x-0 top-0 md:static" : ""} p-6 sm:p-8 lg:absolute lg:inset-y-0 lg:left-0 lg:right-auto lg:flex lg:w-[43%] lg:flex-col lg:justify-center lg:p-10`}
+              >
+                <p className="text-xs uppercase tracking-[0.3em]">
+                  {scent.name} / No. {scent.number}
+                </p>
+                <h2 className="scent-display mt-3 text-3xl leading-tight tracking-[-0.04em] text-[#CA9E5B] md:mt-5 md:text-4xl lg:text-5xl">
+                  {scent.editorialHeading ?? scent.tagline}
+                </h2>
+                <p className="mt-3 max-w-xs text-sm leading-6 md:mt-5 md:text-base md:leading-7">
+                  {scent.editorialBody ?? scent.summary}
+                </p>
+              </div>
+            </section>
+          </Container>
+        ) : null}
 
         {scent.storyArc ? (
           <Container className="mt-16 sm:mt-24">
             <div className="grid gap-8 lg:grid-cols-[0.34fr_1fr]">
               <div>
-                <p className="text-xs uppercase tracking-[0.3em] text-[var(--color-gold)]">
+                <p className="text-xs uppercase tracking-[0.3em] scent-label text-[var(--color-gold)]">
                   Emotional Arc
                 </p>
-                <p className="mt-6 max-w-xs text-sm uppercase leading-6 tracking-[0.22em] text-black/46">
+                <p className="mt-6 max-w-xs text-sm uppercase leading-6 tracking-[0.22em] scent-copy text-black/46">
                   {scent.quote}
                 </p>
               </div>
@@ -164,20 +177,20 @@ export function ScentDetailPage({ scent }: ScentDetailPageProps) {
                 <h2 className="max-w-4xl text-[clamp(3rem,5.2vw,5.1rem)] font-medium leading-[0.9] tracking-[-0.06em] text-balance">
                   {scent.storyMantra ?? `${scent.name} in three movements.`}
                 </h2>
-                <div className="mt-10 divide-y divide-black/10 border-y border-black/10">
+                <div className="mt-10 divide-y scent-dividers divide-black/10 border-y scent-border border-black/10">
                   {scent.storyArc.map((moment, index) => (
                     <article
                       key={moment.label}
                       className="grid gap-4 py-6 sm:grid-cols-[0.18fr_0.82fr] sm:py-8"
                     >
-                      <p className="text-xs uppercase tracking-[0.28em] text-[var(--color-gold)]">
+                      <p className="text-xs uppercase tracking-[0.28em] scent-label text-[var(--color-gold)]">
                         {String(index + 1).padStart(2, "0")} / {moment.label}
                       </p>
                       <div>
-                        <h3 className="text-3xl font-medium tracking-[-0.04em] text-[var(--color-onyx-black)] sm:text-5xl">
+                        <h3 className="text-3xl font-medium tracking-[-0.04em] scent-heading text-[var(--color-onyx-black)] sm:text-5xl">
                           {moment.title}
                         </h3>
-                        <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--color-copy)] sm:text-base sm:leading-8">
+                        <p className="mt-4 max-w-2xl text-sm leading-7 scent-copy text-[var(--color-copy)] sm:text-base sm:leading-8">
                           {moment.body}
                         </p>
                       </div>
@@ -191,36 +204,48 @@ export function ScentDetailPage({ scent }: ScentDetailPageProps) {
 
         <Container className="mt-16 sm:mt-24">
           <div className="grid gap-8 lg:grid-cols-[0.34fr_1fr]">
-            <p className="text-xs uppercase tracking-[0.3em] text-[var(--color-gold)]">
+            <p className="text-xs uppercase tracking-[0.3em] scent-label text-[var(--color-gold)]">
               Wear Notes
             </p>
-            <div className="divide-y divide-black/10 border-y border-black/10">
+            <div className="divide-y scent-dividers divide-black/10 border-y scent-border border-black/10">
               {[
                 ["Tagline", scent.tagline],
                 ["Finish", scent.finish],
                 ["Character", scent.character],
-                ["Mood", scent.mood.join(" / ")],
-                ["Best With", scent.wear.join(" / ")],
-                ["House Line", `${scent.audience} / ${scent.line}`],
+                [
+                  "House Line",
+                  `${scent.profile.audienceLabel} / ${scent.line}`,
+                ],
               ].map(([label, value]) => (
-                <div key={label} className="grid gap-3 py-5 sm:grid-cols-[0.22fr_0.78fr]">
-                  <p className="text-xs uppercase tracking-[0.24em] text-[var(--color-gold)]">
+                <div
+                  key={label}
+                  className="grid gap-3 py-5 sm:grid-cols-[0.22fr_0.78fr]"
+                >
+                  <p className="text-xs uppercase tracking-[0.24em] scent-label text-[var(--color-gold)]">
                     {label}
                   </p>
-                  <p className="text-base leading-8 text-[var(--color-copy)]">{value}</p>
+                  <p className="text-base leading-8 scent-copy text-[var(--color-copy)]">
+                    {value}
+                  </p>
                 </div>
               ))}
               <div className="grid gap-3 py-6 sm:grid-cols-[0.22fr_0.78fr]">
-                <p className="text-xs uppercase tracking-[0.24em] text-[var(--color-gold)]">
+                <p className="text-xs uppercase tracking-[0.24em] scent-label text-[var(--color-gold)]">
                   {scent.action?.label ?? "Order"}
                 </p>
                 <div>
                   {scent.action ? (
-                    <p className="mb-5 max-w-2xl text-base leading-8 text-[var(--color-copy)]">
+                    <p className="mb-5 max-w-2xl text-base leading-8 scent-copy text-[var(--color-copy)]">
                       {scent.action.body}
                     </p>
                   ) : null}
                   <div className="flex flex-wrap gap-3">
+                    <Button href="/scents#scent-catalog" variant="secondary">
+                      Compare Scents
+                    </Button>
+                    <Button href={sampleSetHref} variant="secondary">
+                      Try In RM99 Set
+                    </Button>
                     {scent.action?.secondary ? (
                       <Button
                         href={scent.action.secondary.href}
@@ -228,11 +253,7 @@ export function ScentDetailPage({ scent }: ScentDetailPageProps) {
                       >
                         {scent.action.secondary.label}
                       </Button>
-                    ) : (
-                      <Button href="/scents" variant="secondary">
-                        Explore All Scents
-                      </Button>
-                    )}
+                    ) : null}
                     {scent.action ? (
                       <Button
                         href={scent.action.primary.href}
@@ -245,7 +266,7 @@ export function ScentDetailPage({ scent }: ScentDetailPageProps) {
                         href={buildSecureCheckoutHref(scent.slug)}
                         variant="primary"
                       >
-                        Add To Cart
+                        Shop 50mL Bottle
                       </Button>
                     ) : (
                       <Button href="/preorder" variant="primary">
@@ -255,12 +276,26 @@ export function ScentDetailPage({ scent }: ScentDetailPageProps) {
                       </Button>
                     )}
                   </div>
+                  <PurchaseReassurance compact className="mt-5" />
                 </div>
               </div>
+            </div>
+            <div
+              className={
+                scent.interactiveGallery
+                  ? "mt-6 grid gap-4 lg:col-span-2 lg:grid-cols-2"
+                  : "mt-6 grid gap-4 lg:grid-cols-2"
+              }
+            >
+              <SampleSetCallout trackingLocation="scent_detail" />
+              <ConciergeCallout
+                scentName={scent.name}
+                trackingLocation="scent_detail"
+              />
             </div>
           </div>
         </Container>
       </section>
-    </>
+    </div>
   );
 }

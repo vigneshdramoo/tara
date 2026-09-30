@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 
 import { TrackedAnchor } from "@/components/analytics/TrackedAnchor";
 import { PreorderForm } from "@/components/forms/PreorderForm";
@@ -8,6 +7,7 @@ import { PageHero } from "@/components/sections/PageHero";
 import { Container } from "@/components/ui/Container";
 import { SiteIcon } from "@/components/ui/SiteIcon";
 import { brand } from "@/content/brand";
+import { checkoutExperience } from "@/content/commercial";
 import { buildPageMetadata } from "@/lib/seo";
 
 const preorderHeroVisual = {
@@ -17,11 +17,11 @@ const preorderHeroVisual = {
 };
 
 export const metadata: Metadata = buildPageMetadata({
-  title: "Preorder",
+  title: "Order TARA",
   description:
-    "Preorder Aureya, Zephyr, Maris, Eliora, Ashoka, Ardor, THEON, or the 3 x 8mL RM99 promo set with secure checkout and direct TARA concierge support.",
+    "Order Aureya, Zephyr, Maris, Eliora, Ashoka, Ardor, THEON, or the 3 x 8mL RM99 discovery set with cart-first checkout and ToyyibPay payment.",
   path: "/preorder",
-  socialTitle: "Preorder TARA - Scent Family and 8mL Promo",
+  socialTitle: "Order TARA - Cart-First Checkout",
   socialImage: {
     path: preorderHeroVisual.src,
     alt: preorderHeroVisual.alt,
@@ -38,15 +38,25 @@ export default function PreorderPage() {
         note={brand.preorderPage.note}
         visual={preorderHeroVisual}
         variant="banner"
-        primaryCta={{ label: "Add To Cart", href: "#secure-checkout", variant: "primary" }}
-        secondaryCta={{ label: "Contact Concierge", href: "/contact", variant: "ghost" }}
+        primaryCta={{ label: "Choose Product", href: "#secure-checkout", variant: "primary" }}
+        secondaryCta={{
+          label: "Concierge Help",
+          href: "#concierge-order",
+          variant: "ghost",
+        }}
       />
-      <section className="py-16 sm:py-24">
-        <Container className="grid gap-8 xl:grid-cols-[0.95fr_1.05fr]">
-          <div className="space-y-12">
+      <section className="py-14 sm:py-20">
+        <Container>
+          <PaymentCheckoutForm />
+        </Container>
+      </section>
+
+      <section className="pb-16 sm:pb-24">
+        <Container className="grid gap-10 xl:grid-cols-[0.95fr_1.05fr]">
+          <div className="space-y-10">
             <div className="border-y border-black/10 py-7">
               <p className="text-xs uppercase tracking-[0.28em] text-[var(--color-gold)]">
-                Why preorder
+                Why order this way
               </p>
               <div className="mt-6 divide-y divide-black/10">
                 {brand.preorderPage.perks.map((perk) => (
@@ -62,10 +72,10 @@ export default function PreorderPage() {
 
             <div className="border-b border-black/10 pb-7">
               <p className="text-xs uppercase tracking-[0.28em] text-[var(--color-gold)]">
-                How it works
+                Normal purchase sequence
               </p>
               <div className="mt-6 divide-y divide-black/10 border-t border-black/10">
-                {brand.preorderPage.steps.map((step, index) => (
+                {checkoutExperience.sequence.map((step, index) => (
                   <div
                     key={step}
                     className="grid gap-3 py-5 sm:grid-cols-[0.22fr_0.78fr]"
@@ -122,9 +132,6 @@ export default function PreorderPage() {
           </div>
 
           <div className="space-y-8">
-            <Suspense fallback={null}>
-              <PaymentCheckoutForm />
-            </Suspense>
             <PreorderForm />
           </div>
         </Container>

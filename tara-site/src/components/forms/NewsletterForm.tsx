@@ -82,6 +82,12 @@ export function NewsletterForm({
         location: trackingLocation,
         source,
       });
+      trackEvent(analyticsEvents.emailSignup, {
+        event_category: "lead",
+        form_name: "tara-newsletter",
+        location: trackingLocation,
+        source,
+      });
       form.reset();
       setStatus("success");
     } catch {

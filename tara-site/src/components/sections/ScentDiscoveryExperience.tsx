@@ -16,7 +16,7 @@ export function ScentDiscoveryExperience() {
               {scentDiscoveryExperience.eyebrow}
             </p>
             <h2 className="mt-7 max-w-4xl text-[clamp(3.1rem,7vw,6.8rem)] font-medium leading-[0.86] tracking-[-0.065em] text-balance">
-              {scentDiscoveryExperience.title}
+              Not sure where to start?
             </h2>
             <p className="mt-7 max-w-2xl text-base leading-8 text-[var(--color-copy)] sm:text-lg">
               {scentDiscoveryExperience.body}

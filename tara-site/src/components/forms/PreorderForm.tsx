@@ -4,9 +4,11 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useRef, useState, type FormEvent } from "react";
 
+import { PurchaseReassurance } from "@/components/product/PurchaseReassurance";
 import { Button } from "@/components/ui/Button";
 import { scents } from "@/content/scents";
 import { brand } from "@/content/brand";
+import { checkoutExperience } from "@/content/commercial";
 import { eightMlPromoSet } from "@/content/products";
 import { analyticsEvents, trackEvent, trackFormStart } from "@/lib/analytics";
 import {
@@ -44,6 +46,12 @@ export function PreorderForm() {
     trackFormStart({
       formName: "tara-preorder",
       formLocation: "preorder_page",
+    });
+    trackEvent(analyticsEvents.manualPreorderStart, {
+      event_category: "lead",
+      form_name: "tara-preorder",
+      form_location: "preorder_page",
+      selected_scent: selectedScent,
     });
   }
 
@@ -91,6 +99,16 @@ export function PreorderForm() {
         contact_method: String(formData.get("contact_method") ?? "unknown"),
         delivery_method: String(formData.get("delivery_method") ?? "unknown"),
       });
+      trackEvent(analyticsEvents.manualPreorderSubmit, {
+        event_category: "lead",
+        form_name: "tara-preorder",
+        selected_scent: selectedScent,
+        selected_scent_name: selectedScentName,
+        quantity: Number(formData.get("quantity") ?? 1),
+        purpose: String(formData.get("purpose") ?? "unknown"),
+        contact_method: String(formData.get("contact_method") ?? "unknown"),
+        delivery_method: String(formData.get("delivery_method") ?? "unknown"),
+      });
       form.reset();
       setStatus("success");
       router.push(
@@ -106,7 +124,7 @@ export function PreorderForm() {
 
   return (
     <form
-      id="wishlist"
+      id="concierge-order"
       name="tara-preorder"
       method="POST"
       action="/preorder/success"
@@ -122,26 +140,25 @@ export function PreorderForm() {
       <input
         type="hidden"
         name="subject"
-        value="New lead from %{formName} (%{submissionId})"
+        value="New concierge request from %{formName} (%{submissionId})"
       />
-      <input type="hidden" name="submission_source" value="preorder-page" />
+      <input type="hidden" name="submission_source" value="concierge-order" />
 
       <div className="mb-8">
         <p className="text-xs uppercase tracking-[0.28em] text-[var(--color-gold)]">
-          Reserve Your Scent
+          {checkoutExperience.concierge.eyebrow}
         </p>
         <h2 className="mt-4 text-[clamp(2.5rem,5vw,4.8rem)] font-medium leading-[0.88] tracking-[-0.06em] text-[var(--color-onyx-black)]">
-          Choose a launch bottle or the 3 x 8mL RM99 promo set.
+          {checkoutExperience.concierge.title}
         </h2>
         <p className="mt-4 text-sm leading-7 text-black/58">
-          Select your product first. TARA will confirm payment and delivery
-          personally before anything is finalized.
+          {checkoutExperience.concierge.body}
         </p>
       </div>
 
       <fieldset>
         <legend className="text-xs uppercase tracking-[0.24em] text-black/58">
-          Preferred Scent
+          Preferred product to discuss
         </legend>
         <div className="mt-4 grid gap-4">
           {preorderScents.map((scent) => {
@@ -177,7 +194,7 @@ export function PreorderForm() {
                 </span>
                 <span className="flex flex-col justify-center">
                   <span className="text-xs uppercase tracking-[0.22em] text-[var(--color-gold)]">
-                    {scent.audience} / {scent.launchPrice} first 100
+                    {scent.profile.audienceLabel} / {scent.launchPrice} first 100
                   </span>
                   <span className="mt-3 text-3xl font-medium leading-none tracking-[-0.05em]">
                     {scent.name}
@@ -281,7 +298,7 @@ export function PreorderForm() {
         </label>
         <label className="space-y-3">
           <span className="text-xs uppercase tracking-[0.24em] text-black/58">
-            Quantity
+            Estimated Quantity
           </span>
           <input
             className={fieldClassName}
@@ -298,84 +315,12 @@ export function PreorderForm() {
 
       <div className="mt-8 border-y border-black/10 py-5">
         <p className="text-xs uppercase tracking-[0.28em] text-[var(--color-gold)]">
-          Delivery Address
+          Concierge details
         </p>
-        <div className="mt-4 grid gap-6">
-          <label className="space-y-3">
-            <span className="text-xs uppercase tracking-[0.24em] text-black/58">
-              Address Line 1
-            </span>
-            <input
-              className={fieldClassName}
-              type="text"
-              name="address_line_1"
-              autoComplete="address-line1"
-              required
-            />
-          </label>
-          <label className="space-y-3">
-            <span className="text-xs uppercase tracking-[0.24em] text-black/58">
-              Address Line 2
-            </span>
-            <input
-              className={fieldClassName}
-              type="text"
-              name="address_line_2"
-              autoComplete="address-line2"
-              required
-            />
-          </label>
-          <label className="space-y-3">
-            <span className="text-xs uppercase tracking-[0.24em] text-black/58">
-              Address Line 3 <span className="text-black/32">(optional)</span>
-            </span>
-            <input
-              className={fieldClassName}
-              type="text"
-              name="address_line_3"
-              autoComplete="address-line3"
-            />
-          </label>
-        </div>
-        <div className="mt-6 grid gap-6 sm:grid-cols-3">
-          <label className="space-y-3">
-            <span className="text-xs uppercase tracking-[0.24em] text-black/58">
-              City
-            </span>
-            <input
-              className={fieldClassName}
-              type="text"
-              name="city"
-              autoComplete="address-level2"
-              required
-            />
-          </label>
-          <label className="space-y-3">
-            <span className="text-xs uppercase tracking-[0.24em] text-black/58">
-              Zipcode
-            </span>
-            <input
-              className={fieldClassName}
-              type="text"
-              name="zipcode"
-              autoComplete="postal-code"
-              required
-            />
-          </label>
-          <label className="space-y-3">
-            <span className="text-xs uppercase tracking-[0.24em] text-black/58">
-              Country
-            </span>
-            <input
-              className={fieldClassName}
-              type="text"
-              name="country"
-              defaultValue="Malaysia"
-              autoComplete="country-name"
-              required
-            />
-          </label>
-        </div>
+        <p className="mt-3 text-sm leading-7 text-black/54">
+          No full delivery address is needed here. TARA will collect it later if
+          your concierge request becomes an order.
+        </p>
       </div>
 
       <div className="mt-6 grid gap-6 sm:grid-cols-3">
@@ -396,28 +341,30 @@ export function PreorderForm() {
         </label>
         <label className="space-y-3">
           <span className="text-xs uppercase tracking-[0.24em] text-black/58">
-            Intended Use
+            Concierge Need
           </span>
-          <select className={fieldClassName} name="purpose" defaultValue="personal">
-            <option value="personal">Personal</option>
+          <select className={fieldClassName} name="purpose" defaultValue="guidance">
+            <option value="guidance">Scent guidance</option>
             <option value="gift">Gift</option>
             <option value="event">Event / Bridal</option>
+            <option value="wholesale">Wholesale</option>
             <option value="multiple">Multiple bottles</option>
           </select>
         </label>
         <label className="space-y-3">
           <span className="text-xs uppercase tracking-[0.24em] text-black/58">
-            Delivery Preference
+            Delivery Need
           </span>
           <select
             className={fieldClassName}
             name="delivery_method"
-            defaultValue="delivery"
+            defaultValue="confirm-later"
             required
           >
-            <option value="delivery">Delivery</option>
-            <option value="pickup">Pickup / meet-up</option>
             <option value="confirm-later">Confirm later</option>
+            <option value="delivery">Delivery after confirmation</option>
+            <option value="pickup">Pickup / meet-up</option>
+            <option value="event-delivery">Event delivery</option>
           </select>
         </label>
       </div>
@@ -429,9 +376,11 @@ export function PreorderForm() {
         <textarea
           className={`${fieldClassName} min-h-36 resize-y`}
           name="notes"
-            placeholder="Tell the house your preferred 8mL trio, gifting details, or direct WhatsApp follow-up."
+          placeholder="Tell the house your preferred 8mL trio, gifting details, event date, bridal quantity, wholesale need, or direct WhatsApp follow-up."
         />
       </label>
+
+      <PurchaseReassurance compact className="mt-6" />
 
       <label className="mt-6 flex gap-3 border-y border-black/10 py-4 text-sm leading-7 text-black/58">
         <input
@@ -442,14 +391,13 @@ export function PreorderForm() {
           className="mt-1 h-4 w-4 accent-[var(--color-gold)]"
         />
         <span>
-          I understand this is a preorder request. TARA will personally confirm
-          stock, payment, and delivery before the order is finalized.
+          {checkoutExperience.concierge.consent}
         </span>
       </label>
 
       <div className="mt-8 grid gap-3 sm:flex sm:flex-wrap">
         <Button type="submit" variant="primary" disabled={status === "submitting"}>
-          {status === "submitting" ? "Submitting..." : "Preorder Now"}
+          {status === "submitting" ? "Submitting..." : "Send Concierge Request"}
         </Button>
         <Button
           href={whatsappUrl}
@@ -466,7 +414,7 @@ export function PreorderForm() {
       </p>
       <p aria-live="polite" className="mt-4 text-sm leading-7 text-[var(--color-copy)]">
         {status === "success"
-          ? "Your request is in. TARA will confirm availability, payment, and delivery details by email."
+          ? "Your concierge request is in. TARA will confirm the right order path before collecting delivery details or payment."
           : null}
         {status === "error"
           ? "Submission did not go through. Please try again or use WhatsApp for a faster reply."
