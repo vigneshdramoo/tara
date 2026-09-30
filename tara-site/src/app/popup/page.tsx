@@ -25,6 +25,10 @@ export const metadata: Metadata = {
   alternates: {
     canonical: popupPageUrl,
   },
+  robots: {
+    index: false,
+    follow: true,
+  },
   openGraph: {
     title: "TARA Scent Trail: Stop 12",
     description:

@@ -11,13 +11,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const routes = [
     "/",
     "/about",
-    "/cart",
     "/scents",
-    "/popup",
     "/quiz",
     "/preorder",
     "/contact",
-    "/links",
     "/journal",
     ...legalPages.map((page) => `/${page.slug}`),
     ...journalArticles.map((article) => `/journal/${article.slug}`),
@@ -26,6 +23,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return routes.map((route) => ({
     url: absoluteUrl(route),
-    lastModified: new Date(),
   }));
 }

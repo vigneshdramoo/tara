@@ -1,5 +1,15 @@
+import type { Metadata } from "next";
+
 import { PageHero } from "@/components/sections/PageHero";
 import { Container } from "@/components/ui/Container";
+
+export const metadata: Metadata = {
+  title: "Page Not Found",
+  robots: {
+    index: false,
+    follow: true,
+  },
+};
 
 export default function NotFound() {
   return (
